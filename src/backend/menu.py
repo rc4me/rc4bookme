@@ -25,7 +25,6 @@ def displayMenu():
         st.sidebar.header(f"Welcome, {st.session_state["userInfo"]["name"]}")
         st.sidebar.page_link("pages/submitBookings.py", label="Submit bookings")
         st.sidebar.page_link("pages/viewYourBookings.py", label="View your bookings")
-        st.sidebar.page_link("pages/profile.py", label="Profile")
     else:
         st.sidebar.page_link("main.py", label="Login")
     st.sidebar.page_link("pages/logout.py", label="Logout")

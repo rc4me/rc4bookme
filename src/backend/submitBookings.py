@@ -47,7 +47,7 @@ def tryInsertBooking(
     name: str,
     event: Optional[str] = "Regular booking",
     friendIds: Optional[List[str]] = [],
-):
+):  
     if database.timeSlotIsTaken(startTs, endTs):
         raise ValueError("Time slot has already been taken")
     database.addBooking(

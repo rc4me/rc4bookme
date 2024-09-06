@@ -1,5 +1,3 @@
 
 *.pyc
 src/.streamlit/secrets.toml
-src/resources/oauth_credentials.json
-src/resources/service_account_credentials.json

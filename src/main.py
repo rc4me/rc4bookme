@@ -51,7 +51,7 @@ if not st.session_state["isRegisteredUser"]:
     ):
         try:
             with st.spinner("Registering..."):
-                if not database.isAlreadyRegistered(studentId, teleHandle):
+                if database.isAlreadyRegistered(studentId, teleHandle):
                     raise ValueError(
                         "Your Telegram handle / Student ID is already registered."
                     )

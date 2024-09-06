@@ -21,7 +21,9 @@ if st.session_state["calendar"]["allBookingsCache"] is None:
 st.header("TR3 availability")
 if st.button("Refresh calendar"):
     backend.updateAllBookingsCache()
-mycalendar = calendar(st.session_state["calendar"]["allBookingsCache"], options=calendarOptions)
+mycalendar = calendar(
+    st.session_state["calendar"]["allBookingsCache"], options=calendarOptions
+)
 
 
 st.subheader("Submit bookings")

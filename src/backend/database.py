@@ -4,7 +4,6 @@ from streamlit_gsheets import GSheetsConnection
 import gspread
 import json
 from datetime import datetime, date, time
-from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
 
 conn = st.connection("gsheets", type=GSheetsConnection)
@@ -13,11 +12,12 @@ scope = [
     "https://www.googleapis.com/auth/drive",
 ]
 
-creds = ServiceAccountCredentials.from_json_keyfile_name(
-    "resources/service_account_credentials.json", scope
-)
-client = gspread.authorize(creds)
+# creds = ServiceAccountCredentials.from_json_keyfile_name(
+#     "resources/service_account_credentials.json", scope
+# )
+# client = gspread.authorize(creds)
 
+client = gspread.service_account_from_dict(st.secrets["serviceAccount"], scopes=scope)
 
 def isRegisteredUser(email: str) -> bool:
     isRegisteredUser = (
@@ -42,12 +42,12 @@ def getUserDetails(email: str) -> Dict[str, str]:
 def isAlreadyRegistered(studentId: str, teleHandle: str):
     studentId = studentId.upper()
     teleHandle = teleHandle.strip("@")
-    isValidRegistration = conn.query(
+    isAlreadyRegistered = conn.query(
         sql="SELECT COUNT(*) AS count from Users "
         f"WHERE student_id = '{studentId}'"
         f"OR tele_handle = '{teleHandle}'"
-    ).loc[0, "count"] == 0
-    return isValidRegistration
+    ).loc[0, "count"] >= 1
+    return isAlreadyRegistered
 
 
 def registerStudent(
