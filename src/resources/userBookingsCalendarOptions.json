@@ -1,0 +1,14 @@
+{
+    "editable": false,
+    "height": 600,
+    "headerToolbar": {
+        "left": "today",
+        "center": "title",
+        "right": "prev,next"
+    },
+    "initialView": "listWeek",
+    "resourceGroupField": "building",
+    "resources": [
+        {"id": "TR3", "title": "TR3"}
+    ]
+}
