@@ -1,5 +1,5 @@
 streamlit
-streamlit_calendar
-httpx_oauth
-streamlit_gsheets
+streamlit-calendar
+httpx-oauth
+streamlit-gsheets
 gspread
