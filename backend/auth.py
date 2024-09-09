@@ -33,7 +33,7 @@ def displayLoginButton():
     authorization_url = asyncio.run(getAuthUrl(client, REDIRECT_URI))
     components.html(f"""
 <div style="display: flex; justify-content: left;">
-    <a href="{authorization_url}" target="_self" style="background-color: {'#fff'}; color: {'#000'}; text-decoration: none; text-align: center; font-size: 16px; margin: 4px 2px; cursor: pointer; padding: 8px 12px; border-radius: 4px; display: flex; align-items: center; font-family: 'Roboto', sans-serif; font-weight: 700;">
+    <a href="{authorization_url}" target="_blank" style="background-color: {'#fff'}; color: {'#000'}; text-decoration: none; text-align: center; font-size: 16px; margin: 4px 2px; cursor: pointer; padding: 8px 12px; border-radius: 4px; display: flex; align-items: center; font-family: 'Roboto', sans-serif; font-weight: 700;">
         <img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="Google logo" style="margin-right: 8px; width: 26px; height: 26px; background-color: white; border: 2px solid white; border-radius: 4px;">
         Sign in with Google
     </a>
