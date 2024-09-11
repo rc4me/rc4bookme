@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit_calendar import calendar
 from datetime import timedelta, datetime
 import pytz
-from typing import List
+from typing import List, Dict
 
 st.set_page_config("RC4ME - Book", layout="wide", page_icon="resources/rc4meLogo.jpg")
 
@@ -26,9 +26,11 @@ if (
 ):
     with st.spinner("Getting bookings..."):
         backend.updateAllBookingsCache()
-mycalendar = calendar(
+calendarEvent: Dict = calendar(
     st.session_state["calendar"]["allBookingsCache"], options=calendarOptions
 )
+if calendarEvent.get("callback", "") == "eventClick":
+    st.toast(calendarEvent["eventClick"]["event"]["title"])
 
 
 st.subheader("Submit bookings")

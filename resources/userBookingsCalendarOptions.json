@@ -1,5 +1,6 @@
 {
     "editable": false,
+    "eventInteractive": true,
     "height": 600,
     "headerToolbar": {
         "left": "today",
