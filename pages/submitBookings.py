@@ -32,15 +32,26 @@ mycalendar = calendar(
 
 
 st.subheader("Submit bookings")
-now = datetime.now(pytz.timezone("Singapore")).replace(minute=0, second=0)
-startDate = st.date_input("### Start date", value=now.date() + timedelta(days=2))
-startTime = st.time_input("### Start time", step=timedelta(hours=0.5), value=now.time())
-endDate = st.date_input("### End date", min_value=startDate)
+defaultStart = datetime.now(pytz.timezone("Singapore")).replace(
+    minute=0, second=0
+) + timedelta(days=2)
+startDate = st.date_input("### Start date", value=defaultStart.date())
+startTime = st.time_input(
+    "### Start time", step=timedelta(hours=0.5), value=defaultStart.time()
+)
+
+startTs = pytz.timezone("Singapore").localize(datetime.combine(startDate, startTime))
+defaultEnd = startTs + timedelta(hours=2)
+
+endDate = st.date_input("### End date", min_value=startDate, value=defaultEnd.date())
 endTime = st.time_input(
     "### End time",
     step=timedelta(hours=0.5),
-    value=(now + timedelta(hours=2)).time(),
+    value=defaultEnd.time(),
 )
+
+endTs = pytz.timezone("Singapore").localize(datetime.combine(endDate, endTime))
+
 friendList: List = st.session_state["bookingForm"]["friendIds"]
 newId = st.text_input("Student ID of your friends using TR3 with you:")
 colA, colB = st.columns([1, 1])
@@ -63,7 +74,7 @@ if len(friendList) != 0:
 
 if st.button("Submit", type="primary"):
     try:
-        startTs, endTs = backend.getBookingTs(startDate, endDate, startTime, endTime)
+        validations.verifyBookingPeriod(startDate, endDate, startTime, endTime)
         with st.spinner("Processing booking..."):
             backend.tryInsertBooking(
                 startTs,
