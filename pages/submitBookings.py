@@ -31,10 +31,9 @@ mycalendar = calendar(
 
 
 st.subheader("Submit bookings")
-minDate, maxDate = backend.getValidDateRange()
-startDate = st.date_input("### Start date", min_value=minDate, max_value=maxDate)
+startDate = st.date_input("### Start date")
 startTime = st.time_input("### Start time", step=timedelta(hours=1))
-endDate = st.date_input("### End date", min_value=startDate, max_value=maxDate)
+endDate = st.date_input("### End date")
 endTime = st.time_input("### End time", step=timedelta(hours=1))
 friendList: List = st.session_state["bookingForm"]["friendIds"]
 newId = st.text_input("Student ID of your friends using TR3 with you:")

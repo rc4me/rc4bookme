@@ -3,34 +3,26 @@ import json
 from typing import Dict, Tuple, Optional, List
 from datetime import date, time, datetime, timedelta
 import pandas as pd
+import pytz
 
 from backend import database
 
 
-def getValidDateRange() -> Tuple[date, date]:
-    return date.today() - timedelta(weeks=4), date.today() + timedelta(weeks=6)
-
-
-# @st.cache_data(ttl=timedelta(days=1))
+# @st.cache_data(spinner=false)
 def getCalendarOptions() -> Dict:
-    startDate, endDate = getValidDateRange()
     with open("resources/allBookingsCalendarOptions.json") as file:
         options = json.load(file)
-    options["validRange"] = {
-        "start": str(startDate),
-        "end": str(endDate),
-    }
     return options
 
 
 def getBookingTs(
     startDate: date, endDate: date, startTime: time, endTime: time
 ) -> Tuple[datetime, datetime]:
-    start = datetime.combine(startDate, startTime, tzinfo="Singapore")
-    end = datetime.combine(endDate, endTime, tzinfo="Singapore")
+    start = pytz.timezone("Singapore").localize(datetime.combine(startDate, startTime))
+    end = pytz.timezone("Singapore").localize(datetime.combine(endDate, endTime))
     if start > end:
         raise ValueError("End time cannot be earlier than start time")
-    if start < datetime.now() - timedelta(hours=1):
+    if start < datetime.now(tz=pytz.timezone("Singapore")) - timedelta(hours=1):
         raise ValueError("Booking is before current time")
     if end - start < timedelta(hours=1):
         raise ValueError("Booking must be at least an hour long")
