@@ -43,7 +43,7 @@ startTs = (
     else pytz.timezone("Singapore").localize(datetime.combine(startDate, startTime))
 )
 
-defaultEnd = None if startTs is None else defaultStart + timedelta(hours=2)
+defaultEnd = None if startTs is None else startTs + timedelta(hours=2)
 endDate = st.date_input(
     "### End date",
     min_value=startDate,
