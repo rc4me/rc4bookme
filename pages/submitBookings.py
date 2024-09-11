@@ -32,6 +32,7 @@ mycalendar = calendar(
 
 
 st.subheader("Submit bookings")
+
 defaultStart = datetime.now(pytz.timezone("Singapore")).replace(
     minute=0, second=0
 ) + timedelta(days=2)
@@ -39,17 +40,15 @@ startDate = st.date_input("### Start date", value=defaultStart.date())
 startTime = st.time_input(
     "### Start time", step=timedelta(hours=0.5), value=defaultStart.time()
 )
-
 startTs = pytz.timezone("Singapore").localize(datetime.combine(startDate, startTime))
-defaultEnd = startTs + timedelta(hours=2)
 
+defaultEnd = startTs + timedelta(hours=2)
 endDate = st.date_input("### End date", min_value=startDate, value=defaultEnd.date())
 endTime = st.time_input(
     "### End time",
     step=timedelta(hours=0.5),
     value=defaultEnd.time(),
 )
-
 endTs = pytz.timezone("Singapore").localize(datetime.combine(endDate, endTime))
 
 friendList: List = st.session_state["bookingForm"]["friendIds"]
@@ -74,7 +73,7 @@ if len(friendList) != 0:
 
 if st.button("Submit", type="primary"):
     try:
-        validations.verifyBookingPeriod(startDate, endDate, startTime, endTime)
+        validations.verifyBookingPeriod(startTs, endTs)
         with st.spinner("Processing booking..."):
             backend.tryInsertBooking(
                 startTs,
