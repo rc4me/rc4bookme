@@ -26,8 +26,8 @@ def getCalendarOptions() -> Dict:
 def getBookingTs(
     startDate: date, endDate: date, startTime: time, endTime: time
 ) -> Tuple[datetime, datetime]:
-    start = datetime.combine(startDate, startTime)
-    end = datetime.combine(endDate, endTime)
+    start = datetime.combine(startDate, startTime, tzinfo="Singapore")
+    end = datetime.combine(endDate, endTime, tzinfo="Singapore")
     if start > end:
         raise ValueError("End time cannot be earlier than start time")
     if start < datetime.now() - timedelta(hours=1):
@@ -64,8 +64,8 @@ def tryInsertBooking(
 def getBookingsForCalendar() -> List:
     df = database.getApprovedBookings()
     newDf = pd.DataFrame()
-    newDf["start"] = df["start_unix_ms"] - 28800000
-    newDf["end"] = df["end_unix_ms"] - 28800000
+    newDf["start"] = df["start_unix_ms"]
+    newDf["end"] = df["end_unix_ms"]
     newDf["title"] = (
         df["booking_description"]
         + " - booked by "
