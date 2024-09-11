@@ -10,7 +10,7 @@ from backend import menu
 import backend.submitBookings as backend
 
 
-st.json(st.session_state, expanded=False)
+# st.json(st.session_state, expanded=False)
 menu.redirectIfUnauthenticated()
 menu.displayMenu()
 
