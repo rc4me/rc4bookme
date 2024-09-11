@@ -47,7 +47,7 @@ def tryInsertBooking(
     name: str,
     event: Optional[str] = "Regular booking",
     friendIds: Optional[List[str]] = [],
-):  
+):
     if database.timeSlotIsTaken(startTs, endTs):
         raise ValueError("Time slot has already been taken")
     database.addBooking(
@@ -62,8 +62,7 @@ def tryInsertBooking(
 
 
 def getBookingsForCalendar() -> List:
-    dateRange = getValidDateRange()
-    df = database.getApprovedBookingsInRange(dateRange[0], dateRange[1])
+    df = database.getApprovedBookings()
     newDf = pd.DataFrame()
     newDf["start"] = df["start_unix_ms"]
     newDf["end"] = df["end_unix_ms"]
@@ -74,6 +73,9 @@ def getBookingsForCalendar() -> List:
         + " (@"
         + df["tele_handle"]
         + ")"
+    )
+    newDf["color"] = df["student_id"].apply(
+        lambda x: "green" if x == st.session_state["userInfo"]["studentId"] else "gray"
     )
     return newDf.to_dict(orient="records")
 

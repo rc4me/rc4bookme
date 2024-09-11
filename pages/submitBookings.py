@@ -20,7 +20,8 @@ if st.session_state["calendar"]["allBookingsCache"] is None:
 
 st.header("TR3 availability")
 if st.button("Refresh calendar"):
-    backend.updateAllBookingsCache()
+    with st.spinner("Getting bookings..."):
+        backend.updateAllBookingsCache()
 mycalendar = calendar(
     st.session_state["calendar"]["allBookingsCache"], options=calendarOptions
 )
@@ -30,7 +31,7 @@ st.subheader("Submit bookings")
 minDate, maxDate = backend.getValidDateRange()
 startDate = st.date_input("### Start date", min_value=minDate, max_value=maxDate)
 startTime = st.time_input("### Start time", step=timedelta(hours=1))
-endDate = st.date_input("### End date", min_value=minDate, max_value=maxDate)
+endDate = st.date_input("### End date", min_value=startDate, max_value=maxDate)
 endTime = st.time_input("### End time", step=timedelta(hours=1))
 friendList: List = st.session_state["bookingForm"]["friendIds"]
 newId = st.text_input("Student ID of your friends using TR3 with you:")

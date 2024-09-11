@@ -12,9 +12,10 @@ st.title("RC4ME - Login")
 
 states.setState("bookingForm", {"friendIds": []})
 states.setState(
-    "calendar",
-    {"allBookingsCache": None, "userBookingsCache": None, "userBookingsRange": None},
+    "db",
+    {"bookings": None, "users": None},
 )
+states.setState("calendar", {"allBookingsCache": None, "userBookingsCache": None})
 states.setState("userInfo", {})
 states.setState("isLoggedIn", False)
 states.setState("isRegisteredUser", None)

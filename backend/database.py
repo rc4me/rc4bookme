@@ -3,7 +3,7 @@ from typing import Dict, List
 from streamlit_gsheets import GSheetsConnection
 import gspread
 import json
-from datetime import datetime, date, time
+from datetime import datetime
 import pandas as pd
 
 conn = st.connection("gsheets", type=GSheetsConnection)
@@ -17,36 +17,51 @@ scope = [
 # )
 # client = gspread.authorize(creds)
 
-client = gspread.service_account_from_dict(st.secrets["serviceAccount"], scopes=scope)
+spreadsheet = gspread.service_account_from_dict(
+    st.secrets["serviceAccount"], scopes=scope
+).open("RC4MEDB")
+
+
+def refreshUsers():
+    st.session_state["db"]["users"] = pd.DataFrame(
+        spreadsheet.worksheet("Users").get_all_records()
+    ).set_index("email")
+
+
+def refreshBookings():
+    st.session_state["db"]["bookings"] = pd.DataFrame(
+        spreadsheet.worksheet("Bookings").get_all_records()
+    )
+
 
 def isRegisteredUser(email: str) -> bool:
-    isRegisteredUser = (
-        conn.query(
-            sql="SELECT COUNT(*) AS count FROM Users WHERE email='" + email + "'",
-            ttl="10s",
-        ).loc[0, "count"]
-        == 1
-    )
+    refreshUsers()
+    isRegisteredUser = email in st.session_state["db"]["users"].index.values
     return isRegisteredUser
 
 
 def getUserDetails(email: str) -> Dict[str, str]:
-    df = conn.query(
-        sql="SELECT name, student_id AS studentId, "
-        f"tele_handle AS teleHandle FROM Users WHERE email='{email}'",
-        ttl="10s",
+    refreshUsers()
+    return dict(
+        st.session_state["db"]["users"][["tele_handle", "student_id", "name"]]
+        .rename(
+            columns={
+                "tele_handle": "teleHandle",
+                "student_id": "studentId",
+            }
+        )
+        .loc[email]
     )
-    return dict(df.loc[0])
 
 
 def isAlreadyRegistered(studentId: str, teleHandle: str):
+    refreshUsers()
     studentId = studentId.upper()
     teleHandle = teleHandle.strip("@")
-    isAlreadyRegistered = conn.query(
-        sql="SELECT COUNT(*) AS count from Users "
-        f"WHERE student_id = '{studentId}'"
-        f"OR tele_handle = '{teleHandle}'"
-    ).loc[0, "count"] >= 1
+    isAlreadyRegistered = (
+        studentId in st.session_state["db"]["users"]["student_id"].values
+        or teleHandle in st.session_state["db"]["users"]["tele_handle"].values
+    )
     return isAlreadyRegistered
 
 
@@ -57,7 +72,7 @@ def registerStudent(
     name: str,
     gradYear: int,
 ) -> None:
-    sheet = client.open("RC4MEDB").worksheet("Users")
+    sheet = spreadsheet.worksheet("Users")
     row = [
         email,
         name.title(),
@@ -69,17 +84,16 @@ def registerStudent(
 
 
 def timeSlotIsTaken(startTime: datetime, endTime: datetime) -> bool:
+    refreshBookings()
     startTime = startTime.timestamp() * 1000
     endTime = endTime.timestamp() * 1000
     timeSlotIsTaken = (
-        conn.query(
-            sql="SELECT COUNT(*) AS count FROM Bookings "
-            f"WHERE start_unix_ms < {endTime} "
-            f"AND end_unix_ms > {startTime}"
-            "AND (status == 'A' OR status == 'a')",
-            ttl="1s",
-        ).loc[0, "count"]
-        >= 1
+        len(
+            st.session_state["db"]["bookings"].query(
+                f"start_unix_ms < {endTime} & end_unix_ms > {startTime} & (status == 'A' | status == 'a')",
+            )
+        )
+        > 0
     )
     return timeSlotIsTaken
 
@@ -93,7 +107,7 @@ def addBooking(
     bookingDescription: str,
     friendIds: List[str],
 ):
-    sheet = client.open("RC4MEDB").worksheet("Bookings")
+    sheet = spreadsheet.worksheet("Bookings")
     row = [
         name,
         datetime.now().isoformat(),
@@ -112,27 +126,25 @@ def addBooking(
     sheet.append_row(row)
 
 
-def getApprovedBookingsInRange(startDate: date, endDate: date) -> pd.DataFrame:
-    midnight = time(0, 0, 0)
-    startTs = datetime.combine(startDate, midnight)
-    endTs = datetime.combine(endDate, midnight)
-    return conn.query(
-        sql="SELECT name, tele_handle, booking_description, start_unix_ms, end_unix_ms FROM Bookings "
-        f"WHERE start_unix_ms < {endTs.timestamp() * 1000} "
-        f"AND end_unix_ms > {startTs.timestamp() * 1000} "
-        "AND (status = 'a' or status = 'A')",
-        ttl="1s",
+def getApprovedBookings() -> pd.DataFrame:
+    refreshBookings()
+    return st.session_state["db"]["bookings"][
+        [
+            "student_id",
+            "name",
+            "status",
+            "tele_handle",
+            "booking_description",
+            "start_unix_ms",
+            "end_unix_ms",
+        ]
+    ].query("(status == 'a' | status == 'A')")
+
+
+def getBookingsByUser(studentId: str) -> pd.DataFrame:
+    refreshBookings()
+    return st.session_state["db"]["bookings"][
+        ["student_id", "start_unix_ms", "end_unix_ms", "status", "booking_description"]
+    ].query(
+        f"student_id == '{studentId}'",
     )
-    
-def getBookingsByUser(startDate: date, endDate: date, studentId: str) -> pd.DataFrame:
-    midnight = time(0, 0, 0)
-    startTs = datetime.combine(startDate, midnight)
-    endTs = datetime.combine(endDate, midnight)
-    return conn.query(
-        sql="SELECT start_unix_ms, end_unix_ms, status, booking_description FROM Bookings "
-        f"WHERE start_unix_ms < {endTs.timestamp() * 1000} "
-        f"AND end_unix_ms > {startTs.timestamp() * 1000} "
-        f"AND student_id = '{studentId}'",
-        ttl="1s",
-    )
-    

@@ -1,5 +1,4 @@
-from datetime import date, timedelta
-from typing import Tuple, List, Dict
+from typing import List, Dict
 import pandas as pd
 import streamlit as st
 import json
@@ -7,41 +6,43 @@ import json
 from backend import database
 
 
-def getDefaultDateRange() -> Tuple[date, date]:
-    return date.today() - timedelta(days=2), date.today() + timedelta(weeks=4)
+def getUserBookingsForCalendar(studentId: str) -> List[Dict]:
+    df = database.getBookingsByUser(studentId)
 
-
-def getUserBookingsForCalendar(
-    startDate: date, endDate: date, studentId: str
-) -> List[Dict]:
-    df = database.getBookingsByUser(startDate, endDate, studentId)
-
-    mappings = {"A": "Approved", "P": "Pending", "a": "Approved", "p": "Pending", "R": "Rejected", "r": "Rejected"}
+    statusMappings = {
+        "A": "Approved",
+        "P": "Pending",
+        "a": "Approved",
+        "p": "Pending",
+        "R": "Rejected",
+        "r": "Rejected",
+    }
+    colourMappings = {
+        "A": "green",
+        "P": "yellow",
+        "a": "green",
+        "p": "yellow",
+        "R": "red",
+        "r": "red"
+    }
     newDf = pd.DataFrame()
     newDf["start"] = df["start_unix_ms"]
     newDf["end"] = df["end_unix_ms"]
     newDf["title"] = (
-        df["booking_description"]
-        + " (Status: "
-        + df["status"].replace(mappings)
-        + ")"
+        df["booking_description"] + " (Status: " + df["status"].replace(statusMappings) + ")"
     )
+    newDf["color"] = df["status"].replace(colourMappings)
     return newDf.to_dict(orient="records")
 
 
-def updateUserBookingsCache(studentId: str, startTs: date, endTs: date):
+def updateUserBookingsCache(studentId: str):
     st.session_state["calendar"]["userBookingsCache"] = getUserBookingsForCalendar(
-        startTs, endTs, studentId
+        studentId
     )
 
 
-# @st.cache_data(ttl=timedelta(days=1))
+# @st.cache_data(show_spinner = false)
 def getCalendarOptions() -> Dict:
-    startDate, endDate = getDefaultDateRange()
     with open("resources/userBookingsCalendarOptions.json") as file:
         options = json.load(file)
-    options["validRange"] = {
-        "start": str(startDate),
-        "end": str(endDate),
-    }
     return options
