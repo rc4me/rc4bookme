@@ -26,8 +26,8 @@ def getUserBookingsForCalendar(studentId: str) -> List[Dict]:
         "r": "red"
     }
     newDf = pd.DataFrame()
-    newDf["start"] = df["start_unix_ms"]
-    newDf["end"] = df["end_unix_ms"]
+    newDf["start"] = df["start_unix_ms"] - 28800000
+    newDf["end"] = df["end_unix_ms"] - 28800000
     newDf["title"] = (
         df["booking_description"] + " (Status: " + df["status"].replace(statusMappings) + ")"
     )
