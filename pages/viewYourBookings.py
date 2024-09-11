@@ -16,7 +16,9 @@ studentId = st.session_state["userInfo"]["studentId"]
 
 st.title("View bookings")
 
-if st.button("Refresh calendar"):
+if st.session_state["calendar"]["userBookingsCache"] is None or st.button(
+    "Refresh calendar"
+):
     with st.spinner("Getting bookings..."):
         backend.updateUserBookingsCache(studentId)
 

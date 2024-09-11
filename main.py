@@ -20,7 +20,7 @@ states.setState("userInfo", {})
 states.setState("isLoggedIn", False)
 states.setState("isRegisteredUser", None)
 
-st.json(st.session_state, expanded=False)
+# st.json(st.session_state, expanded=False)
 
 if st.session_state["userInfo"].get("email", None) is None:
     st.session_state["userInfo"]["email"] = auth.getUserEmail()
