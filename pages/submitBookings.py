@@ -35,7 +35,11 @@ st.subheader("Submit bookings")
 defaultStart = datetime.now(pytz.timezone("Singapore")).replace(
     minute=0, second=0
 ) + timedelta(days=2)
-startDate = st.date_input("### Start date", value=defaultStart.date())
+startDate = st.date_input(
+    "### Start date",
+    value=defaultStart.date(),
+    min_value=datetime.now(pytz.timezone("Singapore")).date(),
+)
 startTime = st.time_input("### Start time", step=timedelta(hours=0.5), value=None)
 startTs = (
     None
