@@ -36,7 +36,7 @@ now = datetime.now(pytz.timezone("Singapore")).replace(minute=0, second=0)
 startDate = st.date_input("### Start date", value=now.date() + timedelta(days=2))
 startTime = st.time_input("### Start time", step=timedelta(hours=0.5), value=now.time())
 endDate = st.date_input(
-    "### End date", value=(now + timedelta(days=2)).date(), min_value=startDate
+    "### End date", value=startDate + timedelta(days=2), min_value=startDate
 )
 endTime = st.time_input(
     "### End time",
