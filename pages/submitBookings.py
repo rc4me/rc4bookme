@@ -44,13 +44,21 @@ startTs = (
 )
 
 defaultEnd = None if startTs is None else defaultStart + timedelta(hours=2)
-endDate = st.date_input("### End date", min_value=startDate, value=defaultEnd.date())
+endDate = st.date_input(
+    "### End date",
+    min_value=startDate,
+    value=None if defaultEnd is None else defaultEnd.date(),
+)
 endTime = st.time_input(
     "### End time",
     step=timedelta(hours=0.5),
-    value=defaultEnd.time(),
+    value=None if defaultEnd is None else defaultEnd.time(),
 )
-endTs = pytz.timezone("Singapore").localize(datetime.combine(endDate, endTime))
+endTs = (
+    None
+    if (endDate is None or endTime is None)
+    else pytz.timezone("Singapore").localize(datetime.combine(endDate, endTime))
+)
 
 friendList: List = st.session_state["bookingForm"]["friendIds"]
 newId = st.text_input("Student ID of your friends using TR3 with you:")
@@ -72,7 +80,7 @@ if len(friendList) != 0:
     st.dataframe({"Student ID": friendList}, use_container_width=True)
 
 
-if st.button("Submit", type="primary"):
+if st.button("Submit", type="primary", disabled=endTs is None or startTs is None):
     try:
         validations.verifyBookingPeriod(startTs, endTs)
         with st.spinner("Processing booking..."):
