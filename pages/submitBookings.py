@@ -32,17 +32,18 @@ mycalendar = calendar(
 
 
 st.subheader("Submit bookings")
-
 defaultStart = datetime.now(pytz.timezone("Singapore")).replace(
     minute=0, second=0
 ) + timedelta(days=2)
 startDate = st.date_input("### Start date", value=defaultStart.date())
-startTime = st.time_input(
-    "### Start time", step=timedelta(hours=0.5), value=defaultStart.time()
+startTime = st.time_input("### Start time", step=timedelta(hours=0.5), value=None)
+startTs = (
+    None
+    if startTime is None
+    else pytz.timezone("Singapore").localize(datetime.combine(startDate, startTime))
 )
-startTs = pytz.timezone("Singapore").localize(datetime.combine(startDate, startTime))
 
-defaultEnd = startTs + timedelta(hours=2)
+defaultEnd = None if startTs is None else defaultStart + timedelta(hours=2)
 endDate = st.date_input("### End date", min_value=startDate, value=defaultEnd.date())
 endTime = st.time_input(
     "### End time",
