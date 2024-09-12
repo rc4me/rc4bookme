@@ -14,13 +14,19 @@ def getCalendarOptions() -> Dict:
     return options
 
 
-@st.cache_data(ttl=timedelta(minutes=5), show_spinner=False)
+@st.cache_data(ttl=timedelta(minutes=1), show_spinner=False)
 def getAllUsers() -> Dict[str, str]:
     df: pd.DataFrame = st.session_state["db"]["users"]
     usersDf = pd.DataFrame()
     usersDf["description"] = df["name"] + " (E***" + df["student_id"].str[4:] + ")"
     usersDf["studentId"] = df["student_id"].copy()
-    return usersDf.set_index("description", drop=True)["studentId"].to_dict()
+    usersDict = usersDf.set_index("description", drop=True)["studentId"].to_dict()
+    
+    userInfo = st.session_state["userInfo"]
+    selfName = userInfo["name"]
+    selfStudentId = userInfo["studentId"]
+    del usersDict[selfName + " (E***" + selfStudentId[4:] + ")"]
+    return usersDict
 
 
 def tryInsertBooking(

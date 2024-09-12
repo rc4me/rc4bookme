@@ -64,9 +64,15 @@ endTs = (
     else pytz.timezone("Singapore").localize(datetime.combine(endDate, endTime))
 )
 
+bookingDescription = "Regular booking"
+if st.session_state["userInfo"]["userType"] == "admin":
+    bookingDescription = st.text_input("Booking description", value="Regular booking")
+
 friendList: List = st.session_state["bookingForm"]["friendIds"]
 allUsers = backend.getAllUsers()
-friends = st.multiselect("Booking used with:", options=allUsers, placeholder="Enter names...")
+friends = st.multiselect(
+    "Booking used with:", options=allUsers, placeholder="Enter names..."
+)
 friendIds = [allUsers[friend] for friend in friends]
 
 if st.button("Submit", type="primary", disabled=endTs is None or startTs is None):
@@ -80,6 +86,7 @@ if st.button("Submit", type="primary", disabled=endTs is None or startTs is None
                 st.session_state["userInfo"]["teleHandle"],
                 st.session_state["userInfo"]["name"],
                 friendIds=friendIds,
+                event=bookingDescription,
             )
         st.info("Booking submitted!")
     except ValueError as e:

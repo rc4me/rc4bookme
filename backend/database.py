@@ -1,22 +1,14 @@
 import streamlit as st
 from typing import Dict, List
-from streamlit_gsheets import GSheetsConnection
 import gspread
 import json
 from datetime import datetime
 import pandas as pd
 
-conn = st.connection("gsheets", type=GSheetsConnection)
 scope = [
     "https://spreadsheets.google.com/feeds",
     "https://www.googleapis.com/auth/drive",
 ]
-
-# creds = ServiceAccountCredentials.from_json_keyfile_name(
-#     "resources/service_account_credentials.json", scope
-# )
-# client = gspread.authorize(creds)
-
 spreadsheet = gspread.service_account_from_dict(
     st.secrets["serviceAccount"], scopes=scope
 ).open("RC4MEDB")
@@ -43,11 +35,14 @@ def isRegisteredUser(email: str) -> bool:
 def getUserDetails(email: str) -> Dict[str, str]:
     refreshUsers()
     return dict(
-        st.session_state["db"]["users"][["tele_handle", "student_id", "name"]]
+        st.session_state["db"]["users"][
+            ["tele_handle", "student_id", "name", "user_type"]
+        ]
         .rename(
             columns={
                 "tele_handle": "teleHandle",
                 "student_id": "studentId",
+                "user_type": "userType",
             }
         )
         .loc[email]
@@ -79,6 +74,7 @@ def registerStudent(
         studentId.upper(),
         teleHandle.strip("@"),
         gradYear,
+        "user",
     ]
     sheet.append_row(row)
 
@@ -151,5 +147,12 @@ def getBookingsForUser(studentId: str) -> pd.DataFrame:
         axis=1,
     )
     return bookingsDf[isRelevantToUser][
-        ["name", "student_id", "start_unix_ms", "end_unix_ms", "status", "booking_description"]
+        [
+            "name",
+            "student_id",
+            "start_unix_ms",
+            "end_unix_ms",
+            "status",
+            "booking_description",
+        ]
     ]
