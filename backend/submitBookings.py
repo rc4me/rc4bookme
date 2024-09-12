@@ -1,9 +1,8 @@
 import streamlit as st
 import json
-from typing import Dict, Tuple, Optional, List
-from datetime import date, time, datetime, timedelta
+from typing import Dict, Optional, List
+from datetime import datetime, timedelta
 import pandas as pd
-import pytz
 
 from backend import database
 
@@ -13,6 +12,15 @@ def getCalendarOptions() -> Dict:
     with open("resources/allBookingsCalendarOptions.json") as file:
         options = json.load(file)
     return options
+
+
+@st.cache_data(ttl=timedelta(minutes=5), show_spinner=False)
+def getAllUsers() -> Dict[str, str]:
+    df: pd.DataFrame = st.session_state["db"]["users"]
+    usersDf = pd.DataFrame()
+    usersDf["description"] = df["name"] + " (E***" + df["student_id"].str[4:] + ")"
+    usersDf["studentId"] = df["student_id"].copy()
+    return usersDf.set_index("description", drop=True)["studentId"].to_dict()
 
 
 def tryInsertBooking(
@@ -38,6 +46,7 @@ def tryInsertBooking(
 
 
 def getBookingsForCalendar() -> List:
+    studentId = st.session_state["userInfo"]["studentId"]
     df = database.getApprovedBookings()
     newDf = pd.DataFrame()
     newDf["start"] = df["start_unix_ms"]
@@ -50,8 +59,11 @@ def getBookingsForCalendar() -> List:
         + df["tele_handle"]
         + ")"
     )
-    newDf["color"] = df["student_id"].apply(
-        lambda x: "green" if x == st.session_state["userInfo"]["studentId"] else "gray"
+    newDf["color"] = df.apply(
+        lambda row: "green"
+        if row["student_id"] == studentId or studentId in json.loads(row["friend_ids"])
+        else "gray",
+        axis=1,
     )
     return newDf.to_dict(orient="records")
 

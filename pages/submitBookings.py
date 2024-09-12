@@ -10,8 +10,6 @@ from utils import validations
 from backend import menu
 import backend.submitBookings as backend
 
-
-# st.json(st.session_state, expanded=False)
 menu.redirectIfUnauthenticated()
 menu.displayMenu()
 
@@ -67,24 +65,9 @@ endTs = (
 )
 
 friendList: List = st.session_state["bookingForm"]["friendIds"]
-newId = st.text_input("Student ID of your friends using TR3 with you:")
-colA, colB = st.columns([1, 1])
-with colA:
-    if st.button("Add"):
-        if not validations.isValidStudentId(newId):
-            st.warning("Invalid student ID")
-        elif newId.upper() in friendList:
-            st.warning("Student ID already in list")
-        elif newId.upper() == st.session_state["studentId"]:
-            st.warning("Cannot add yourself into friends list")
-        else:
-            friendList.append(newId.upper())
-with colB:
-    if st.button("Reset"):
-        friendList.clear()
-if len(friendList) != 0:
-    st.dataframe({"Student ID": friendList}, use_container_width=True)
-
+allUsers = backend.getAllUsers()
+friends = st.multiselect("Booking used with:", options=allUsers, placeholder="Enter names...")
+friendIds = [allUsers[friend] for friend in friends]
 
 if st.button("Submit", type="primary", disabled=endTs is None or startTs is None):
     try:
@@ -96,7 +79,7 @@ if st.button("Submit", type="primary", disabled=endTs is None or startTs is None
                 st.session_state["userInfo"]["studentId"],
                 st.session_state["userInfo"]["teleHandle"],
                 st.session_state["userInfo"]["name"],
-                friendIds=friendList,
+                friendIds=friendIds,
             )
         st.info("Booking submitted!")
     except ValueError as e:

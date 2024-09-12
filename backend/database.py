@@ -29,9 +29,9 @@ def refreshUsers():
 
 
 def refreshBookings():
-    st.session_state["db"]["bookings"] = pd.DataFrame(
-        spreadsheet.worksheet("Bookings").get_all_records()
-    )
+    bookingsDf = pd.DataFrame(spreadsheet.worksheet("Bookings").get_all_records())
+    bookingsDf["friend_ids"] = bookingsDf["friend_ids"].apply(json.loads).apply(set)
+    st.session_state["db"]["bookings"] = bookingsDf
 
 
 def isRegisteredUser(email: str) -> bool:
@@ -137,14 +137,19 @@ def getApprovedBookings() -> pd.DataFrame:
             "booking_description",
             "start_unix_ms",
             "end_unix_ms",
+            "friend_ids",
         ]
     ].query("(status == 'a' | status == 'A')")
 
 
-def getBookingsByUser(studentId: str) -> pd.DataFrame:
+def getBookingsForUser(studentId: str) -> pd.DataFrame:
     refreshBookings()
-    return st.session_state["db"]["bookings"][
-        ["student_id", "start_unix_ms", "end_unix_ms", "status", "booking_description"]
-    ].query(
-        f"student_id == '{studentId}'",
+    bookingsDf: pd.DataFrame = st.session_state["db"]["bookings"]
+    isRelevantToUser = bookingsDf.apply(
+        lambda row: row["student_id"] == studentId
+        or (studentId in row["friend_ids"] and row["status"] == "A"),
+        axis=1,
     )
+    return bookingsDf[isRelevantToUser][
+        ["name", "student_id", "start_unix_ms", "end_unix_ms", "status", "booking_description"]
+    ]

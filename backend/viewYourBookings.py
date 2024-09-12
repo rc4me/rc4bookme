@@ -7,30 +7,33 @@ from backend import database
 
 
 def getUserBookingsForCalendar(studentId: str) -> List[Dict]:
-    df = database.getBookingsByUser(studentId)
+    df = database.getBookingsForUser(studentId)
 
     statusMappings = {
         "A": "Approved",
         "P": "Pending",
-        "a": "Approved",
-        "p": "Pending",
         "R": "Rejected",
-        "r": "Rejected",
     }
     colourMappings = {
         "A": "green",
         "P": "yellow",
-        "a": "green",
-        "p": "yellow",
         "R": "red",
-        "r": "red"
     }
     newDf = pd.DataFrame()
     newDf["start"] = df["start_unix_ms"]
     newDf["end"] = df["end_unix_ms"]
-    newDf["title"] = (
-        df["booking_description"] + " (Status: " + df["status"].replace(statusMappings) + ")"
+    newDf["title"] = df.apply(
+        lambda row: (
+            row["booking_description"]
+            + " (Status: "
+            + statusMappings[row["status"]]
+            + ")"
+        )
+        if row["student_id"] == studentId
+        else (row["booking_description"] + " (Booked by " + row["name"] + ")"),
+        axis=1,
     )
+
     newDf["color"] = df["status"].replace(colourMappings)
     return newDf.to_dict(orient="records")
 
