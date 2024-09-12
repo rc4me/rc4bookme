@@ -61,7 +61,7 @@ def getBookingsForCalendar() -> List:
     )
     newDf["color"] = df.apply(
         lambda row: "green"
-        if row["student_id"] == studentId or studentId in json.loads(row["friend_ids"])
+        if row["student_id"] == studentId or studentId in row["friend_ids"]
         else "gray",
         axis=1,
     )
