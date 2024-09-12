@@ -15,6 +15,7 @@ states.setState(
     "db",
     {"bookings": None, "users": None},
 )
+states.setState("atPage", "main")
 states.setState("calendar", {"allBookingsCache": None, "userBookingsCache": None})
 states.setState("userInfo", {})
 states.setState("isLoggedIn", False)

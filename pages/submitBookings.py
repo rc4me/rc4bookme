@@ -13,17 +13,17 @@ import backend.submitBookings as backend
 menu.redirectIfUnauthenticated()
 menu.displayMenu()
 
-calendarOptions = backend.getCalendarOptions()
-if st.session_state["calendar"]["allBookingsCache"] is None:
-    backend.updateAllBookingsCache()
-
 st.header("TR3 availability")
 if (
     st.button("Refresh calendar")
     or st.session_state["calendar"]["allBookingsCache"] is None
+    or st.session_state["atPage"] != "submitBookings"
 ):
+    st.session_state["atPage"] = "submitBookings"
     with st.spinner("Getting bookings..."):
         backend.updateAllBookingsCache()
+    
+calendarOptions = backend.getCalendarOptions()
 calendarEvent: Dict = calendar(
     st.session_state["calendar"]["allBookingsCache"], options=calendarOptions
 )
