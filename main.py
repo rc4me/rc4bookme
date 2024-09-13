@@ -1,4 +1,5 @@
 import streamlit as st
+from datetime import date
 
 st.set_page_config("RC4ME - Login", layout="wide", page_icon="resources/rc4meLogo.jpg")
 
@@ -43,7 +44,12 @@ if not st.session_state["isRegisteredUser"]:
     name = st.text_input("Full name (as in matriculation card)")
     studentId = st.text_input("Student ID (eg. `E1234567`)")
     teleHandle = st.text_input("Telegram handle")
-    gradYear = st.number_input("Year of graduation", min_value=2025, value=None)
+    gradYear = st.number_input(
+        "Year of graduation",
+        min_value=date.today().year,
+        max=date.today().year + 4,
+        value=None,
+    )
     if st.button(
         "Register",
         type="primary",
