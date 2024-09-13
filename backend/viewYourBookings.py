@@ -8,7 +8,9 @@ from backend import database
 
 def getUserBookingsForCalendar(studentId: str) -> List[Dict]:
     df = database.getBookingsForUser(studentId)
-
+    if len(df) == 0:
+        return []
+    
     statusMappings = {
         "A": "Approved",
         "P": "Pending",

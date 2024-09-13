@@ -51,9 +51,12 @@ def tryInsertBooking(
     )
 
 
-def getBookingsForCalendar() -> List:
-    studentId = st.session_state["userInfo"]["studentId"]
+def getBookingsForCalendar() -> List[Dict]:
     df = database.getApprovedBookings()
+    if len(df) == 0:
+        return []
+    
+    studentId = st.session_state["userInfo"]["studentId"]
     newDf = pd.DataFrame()
     newDf["start"] = df["start_unix_ms"]
     newDf["end"] = df["end_unix_ms"]
