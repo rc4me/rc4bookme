@@ -47,7 +47,7 @@ if not st.session_state["isRegisteredUser"]:
     gradYear = st.number_input(
         "Year of graduation",
         min_value=date.today().year,
-        max_value==date.today().year + 4,
+        max_value=date.today().year + 4,
         value=None,
     )
     if st.button(
