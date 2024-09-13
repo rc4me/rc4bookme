@@ -28,8 +28,10 @@ calendarEvent: Dict = calendar(
     st.session_state["calendar"]["allBookingsCache"], options=calendarOptions
 )
 if calendarEvent.get("callback", "") == "eventClick":
-    st.toast(calendarEvent["eventClick"]["event"]["title"])
-
+    components = calendarEvent["eventClick"]["event"]["title"].split("@")
+    teleHandle = components[-1][:-1]
+    event = "".join(components[:-1])
+    st.toast(event + f"[@{teleHandle}](https://t.me/{teleHandle}))")
 
 st.subheader("Submit bookings")
 defaultStart = datetime.now(pytz.timezone("Singapore")).replace(
