@@ -80,6 +80,7 @@ friendIds = [allUsers[friend] for friend in friends]
 if st.button("Submit", type="primary", disabled=endTs is None or startTs is None):
     try:
         validations.verifyBookingPeriod(startTs, endTs)
+        #TODO: allow admins to book retroactively / far into future while users cannot
         with st.spinner("Processing booking..."):
             backend.tryInsertBooking(
                 startTs,

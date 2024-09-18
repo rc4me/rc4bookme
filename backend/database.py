@@ -22,7 +22,8 @@ def refreshUsers():
 
 def refreshBookings():
     bookingsDf = pd.DataFrame(spreadsheet.worksheet("Bookings").get_all_records())
-    bookingsDf["friend_ids"] = bookingsDf["friend_ids"].apply(json.loads).apply(set)
+    if len(bookingsDf) != 0:
+        bookingsDf["friend_ids"] = bookingsDf["friend_ids"].apply(json.loads).apply(set)
     st.session_state["db"]["bookings"] = bookingsDf
 
 
@@ -65,6 +66,7 @@ def registerStudent(
     teleHandle: str,
     email: str,
     name: str,
+    roomNumber: str,
     gradYear: int,
 ) -> None:
     sheet = spreadsheet.worksheet("Users")
@@ -73,6 +75,7 @@ def registerStudent(
         name.title(),
         studentId.upper(),
         teleHandle.strip("@"),
+        roomNumber,
         gradYear,
         "user",
     ]
@@ -81,6 +84,8 @@ def registerStudent(
 
 def timeSlotIsTaken(startTime: datetime, endTime: datetime) -> bool:
     refreshBookings()
+    if len(st.session_state["db"]["bookings"]) == 0:
+        return False
     startTime = startTime.timestamp() * 1000
     endTime = endTime.timestamp() * 1000
     timeSlotIsTaken = (
@@ -124,6 +129,19 @@ def addBooking(
 
 def getApprovedBookings() -> pd.DataFrame:
     refreshBookings()
+    if len(st.session_state["db"]["bookings"]) == 0:
+        return pd.DataFrame(
+            columns=[
+                "student_id",
+                "name",
+                "status",
+                "tele_handle",
+                "booking_description",
+                "start_unix_ms",
+                "end_unix_ms",
+                "friend_ids",
+            ]
+        )
     return st.session_state["db"]["bookings"][
         [
             "student_id",
@@ -146,6 +164,8 @@ def getBookingsForUser(studentId: str) -> pd.DataFrame:
         or (studentId in row["friend_ids"] and row["status"] == "A"),
         axis=1,
     )
+    if isRelevantToUser.sum() == 0:
+        return
     return bookingsDf[isRelevantToUser][
         [
             "name",

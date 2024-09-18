@@ -3,6 +3,7 @@ from datetime import date
 
 st.set_page_config("RC4ME - Login", layout="wide", page_icon="resources/rc4meLogo.jpg")
 
+import backend.main as backend
 from backend import menu, database, auth
 from utils import validations, states
 
@@ -44,18 +45,22 @@ if not st.session_state["isRegisteredUser"]:
     name = st.text_input("Full name (as in matriculation card)")
     studentId = st.text_input("Student ID (eg. `E1234567`)")
     teleHandle = st.text_input("Telegram handle")
+    roomNumber = st.selectbox(
+        "Room number", placeholder="Enter room number", options=backend.getRoomNumbers(), index=None
+    )
     gradYear = st.number_input(
         "Year of graduation",
         min_value=date.today().year,
         max_value=date.today().year + 4,
-        value=None,
+        value=date.today().year + 4,
     )
     if st.button(
         "Register",
         type="primary",
         disabled=not validations.isValidStudentId(studentId)
         or teleHandle is None
-        or gradYear is None,
+        or gradYear is None
+        or roomNumber is None,
     ):
         try:
             with st.spinner("Registering..."):
@@ -68,6 +73,7 @@ if not st.session_state["isRegisteredUser"]:
                     teleHandle,
                     st.session_state["userInfo"]["email"],
                     name,
+                    roomNumber,
                     gradYear,
                 )
             st.session_state["isRegisteredUser"] = True
