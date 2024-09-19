@@ -165,7 +165,16 @@ def getBookingsForUser(studentId: str) -> pd.DataFrame:
         axis=1,
     )
     if isRelevantToUser.sum() == 0:
-        return
+        return pd.DataFrame(
+            columns=[
+                "name",
+                "student_id",
+                "start_unix_ms",
+                "end_unix_ms",
+                "status",
+                "booking_description",
+            ]
+        )
     return bookingsDf[isRelevantToUser][
         [
             "name",

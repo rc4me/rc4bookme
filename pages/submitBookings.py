@@ -22,7 +22,7 @@ if (
     st.session_state["atPage"] = "submitBookings"
     with st.spinner("Getting bookings..."):
         backend.updateAllBookingsCache()
-    
+
 calendarOptions = backend.getCalendarOptions()
 calendarEvent: Dict = calendar(
     st.session_state["calendar"]["allBookingsCache"], options=calendarOptions
@@ -33,14 +33,14 @@ if calendarEvent.get("callback", "") == "eventClick":
     event = "".join(components[:-1])
     st.toast(event + f"[@{teleHandle}](https://t.me/{teleHandle}))")
 
+isAdmin = st.session_state["userInfo"]["userType"] == "admin"
 st.subheader("Submit bookings")
-defaultStart = datetime.now(pytz.timezone("Singapore")).replace(
-    minute=0, second=0
-) + timedelta(days=2)
+today = datetime.now(pytz.timezone("Singapore")).date()
 startDate = st.date_input(
     "### Start date",
-    value=defaultStart.date(),
-    min_value=datetime.now(pytz.timezone("Singapore")).date(),
+    value=today + timedelta(days=2),
+    min_value=None if isAdmin else today,
+    max_value=None if isAdmin else today + timedelta(weeks=2),
 )
 startTime = st.time_input("### Start time", step=timedelta(hours=0.5), value=None)
 startTs = (
@@ -80,7 +80,6 @@ friendIds = [allUsers[friend] for friend in friends]
 if st.button("Submit", type="primary", disabled=endTs is None or startTs is None):
     try:
         validations.verifyBookingPeriod(startTs, endTs)
-        #TODO: allow admins to book retroactively / far into future while users cannot
         with st.spinner("Processing booking..."):
             backend.tryInsertBooking(
                 startTs,
