@@ -4,6 +4,7 @@ import gspread
 import json
 from datetime import datetime
 import pandas as pd
+from uuid import uuid4
 
 scope = [
     "https://spreadsheets.google.com/feeds",
@@ -22,6 +23,7 @@ def refreshUsers():
 
 def refreshBookings():
     bookingsDf = pd.DataFrame(spreadsheet.worksheet("Bookings").get_all_records())
+    bookingsDf = bookingsDf.set_index("booking_uid", drop=True)
     if len(bookingsDf) != 0:
         bookingsDf["friend_ids"] = bookingsDf["friend_ids"].apply(json.loads).apply(set)
     st.session_state["db"]["bookings"] = bookingsDf
@@ -123,6 +125,7 @@ def addBooking(
         json.dumps(friendIds),
         startTs.timestamp() * 1000,
         endTs.timestamp() * 1000,
+        str(uuid4()),
     ]
     sheet.append_row(row)
 
@@ -185,3 +188,11 @@ def getBookingsForUser(studentId: str) -> pd.DataFrame:
             "booking_description",
         ]
     ]
+
+
+def writeToDb(newDf: pd.DataFrame, worksheetName: str):
+    """
+    Overwrites the entire sheet! Use with caution.
+    """
+    bookingsWorksheet = spreadsheet.worksheet(worksheetName)
+    bookingsWorksheet.update([newDf.columns.values.tolist()] + newDf.values.tolist())

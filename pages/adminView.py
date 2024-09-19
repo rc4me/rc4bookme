@@ -10,6 +10,8 @@ import helpers.adminView as helpers
 menu.redirectIfNotAdmin()
 menu.displayMenu()
 
+
+st.title("Admin view - all bookings")
 if (
     st.button("Refresh calendar")
     or st.session_state["calendar"]["adminBookingsCache"] is None

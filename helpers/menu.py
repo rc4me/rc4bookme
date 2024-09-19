@@ -37,7 +37,7 @@ def displayMenu():
         st.sidebar.page_link("pages/submitBookings.py", label="Submit bookings")
         st.sidebar.page_link("pages/viewYourBookings.py", label="View your bookings")
         if st.session_state["userInfo"]["userType"] == "admin":
-            st.sidebar.page_link("pages/adminView.py", label="View all bookings")
+            st.sidebar.page_link("pages/adminView.py", label="Admin view")
     else:
         st.sidebar.page_link("main.py", label="Login")
     st.sidebar.page_link("pages/logout.py", label="Logout")
