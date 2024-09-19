@@ -5,8 +5,8 @@ st.set_page_config(
     "RC4ME - View Bookings", layout="wide", page_icon="resources/rc4meLogo.jpg"
 )
 
-import backend.viewYourBookings as backend
-from backend import menu
+import helpers.viewYourBookings as helpers
+from helpers import menu
 
 menu.redirectIfUnauthenticated()
 menu.displayMenu()
@@ -23,9 +23,9 @@ if (
 ):
     st.session_state["atPage"] = "viewYourBookings"
     with st.spinner("Getting bookings..."):
-        backend.updateUserBookingsCache(studentId)
+        helpers.updateUserBookingsCache(studentId)
 
-calendarOptions = backend.getCalendarOptions()
+calendarOptions = helpers.getCalendarOptions()
 mycalendar = calendar(
     st.session_state["calendar"]["userBookingsCache"], options=calendarOptions
 )

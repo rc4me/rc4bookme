@@ -3,14 +3,14 @@ import pandas as pd
 import streamlit as st
 import json
 
-from backend import database
+from helpers import database
 
 
 def getUserBookingsForCalendar(studentId: str) -> List[Dict]:
     df = database.getBookingsForUser(studentId)
     if len(df) == 0:
         return []
-    
+
     statusMappings = {
         "A": "Approved",
         "P": "Pending",

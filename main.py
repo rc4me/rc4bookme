@@ -3,8 +3,8 @@ from datetime import date
 
 st.set_page_config("RC4ME - Login", layout="wide", page_icon="resources/rc4meLogo.jpg")
 
-import backend.main as backend
-from backend import menu, database, auth
+import helpers.main as helpers
+from helpers import menu, database, auth
 from utils import validations, states
 
 menu.redirectIfAuthenticated()
@@ -46,7 +46,7 @@ if not st.session_state["isRegisteredUser"]:
     studentId = st.text_input("Student ID (eg. `E1234567`)")
     teleHandle = st.text_input("Telegram handle")
     roomNumber = st.selectbox(
-        "Room number", placeholder="Enter room number", options=backend.getRoomNumbers(), index=None
+        "Room number", placeholder="Enter room number", options=helpers.getRoomNumbers(), index=None
     )
     gradYear = st.number_input(
         "Year of graduation",

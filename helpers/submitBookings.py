@@ -4,7 +4,7 @@ from typing import Dict, Optional, List
 from datetime import datetime, timedelta
 import pandas as pd
 
-from backend import database
+from helpers import database
 
 
 # @st.cache_data(spinner=false)
@@ -21,7 +21,7 @@ def getAllUsers() -> Dict[str, str]:
     usersDf["description"] = df["name"] + " (E***" + df["student_id"].str[4:] + ")"
     usersDf["studentId"] = df["student_id"].copy()
     usersDict = usersDf.set_index("description", drop=True)["studentId"].to_dict()
-    
+
     userInfo = st.session_state["userInfo"]
     selfName = userInfo["name"]
     selfStudentId = userInfo["studentId"]
@@ -55,7 +55,7 @@ def getBookingsForCalendar() -> List[Dict]:
     df = database.getApprovedBookings()
     if len(df) == 0:
         return []
-    
+
     studentId = st.session_state["userInfo"]["studentId"]
     newDf = pd.DataFrame()
     newDf["start"] = df["start_unix_ms"]

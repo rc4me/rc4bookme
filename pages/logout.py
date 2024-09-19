@@ -1,5 +1,5 @@
 import streamlit as st
-from backend import menu
+from helpers import menu
 
 menu.redirectIfUnauthenticated()
 st.session_state["userInfo"].clear()

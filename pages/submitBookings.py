@@ -7,8 +7,8 @@ from typing import List, Dict
 st.set_page_config("RC4ME - Book", layout="wide", page_icon="resources/rc4meLogo.jpg")
 
 from utils import validations
-from backend import menu
-import backend.submitBookings as backend
+from helpers import menu
+import helpers.submitBookings as helpers
 
 menu.redirectIfUnauthenticated()
 menu.displayMenu()
@@ -21,9 +21,9 @@ if (
 ):
     st.session_state["atPage"] = "submitBookings"
     with st.spinner("Getting bookings..."):
-        backend.updateAllBookingsCache()
+        helpers.updateAllBookingsCache()
 
-calendarOptions = backend.getCalendarOptions()
+calendarOptions = helpers.getCalendarOptions()
 calendarEvent: Dict = calendar(
     st.session_state["calendar"]["allBookingsCache"], options=calendarOptions
 )
@@ -71,7 +71,7 @@ if st.session_state["userInfo"]["userType"] == "admin":
     bookingDescription = st.text_input("Booking description", value="Regular booking")
 
 friendList: List = st.session_state["bookingForm"]["friendIds"]
-allUsers = backend.getAllUsers()
+allUsers = helpers.getAllUsers()
 friends = st.multiselect(
     "Booking used with:", options=allUsers, placeholder="Enter names..."
 )
@@ -81,7 +81,7 @@ if st.button("Submit", type="primary", disabled=endTs is None or startTs is None
     try:
         validations.verifyBookingPeriod(startTs, endTs)
         with st.spinner("Processing booking..."):
-            backend.tryInsertBooking(
+            helpers.tryInsertBooking(
                 startTs,
                 endTs,
                 st.session_state["userInfo"]["studentId"],
