@@ -12,14 +12,10 @@ def getRoomNumbers() -> List[str]:
         for suiteUnit in ["A", "B", "C", "D", "E", "F"]
     ]
     roomNumbers += [
-        f"#{level:02}-{suiteNumber:02}"
-        for level in range(3, 18)
-        for suiteNumber in range(2, 11)
+        f"#{level:02}-{unit:02}" for level in range(3, 18) for unit in range(2, 11)
     ]
     roomNumbers += [
-        f"#{level:02}-{suiteNumber:02}"
-        for level in range(3, 18)
-        for suiteNumber in range(13, 28)
+        f"#{level:02}-{unit:02}" for level in range(3, 18) for unit in range(13, 28)
     ]
     return sorted(roomNumbers)
 
@@ -31,7 +27,14 @@ def initialiseSessionStates():
         {"bookings": None, "users": None},
     )
     states.setState("atPage", "main")
-    states.setState("calendar", {"allBookingsCache": None, "userBookingsCache": None})
+    states.setState(
+        "calendar",
+        {
+            "allBookingsCache": None,
+            "userBookingsCache": None,
+            "adminBookingsCache": None,
+        },
+    )
     states.setState("userInfo", {})
     states.setState("isLoggedIn", False)
     states.setState("isRegisteredUser", None)
