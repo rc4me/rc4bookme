@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit_calendar import calendar
 
 st.set_page_config(
-    "RC4ME - View Bookings", layout="wide", page_icon="resources/rc4meLogo.jpg"
+    "RC4ME - View Bookings", layout="wide", page_icon="resources/rc4meLogo.png"
 )
 
 import helpers.viewYourBookings as helpers

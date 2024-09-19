@@ -1,8 +1,5 @@
 import streamlit as st
-from helpers import menu
 
-menu.redirectIfUnauthenticated()
-st.session_state["userInfo"].clear()
-st.session_state["isLoggedIn"] = False
-st.session_state["isRegisteredUser"] = False
+st.set_page_config("RC4ME - Logout", layout="wide", page_icon="resources/rc4meLogo.png")
+st.session_state.clear()
 st.switch_page("main.py")

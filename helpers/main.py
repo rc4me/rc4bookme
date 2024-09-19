@@ -1,5 +1,6 @@
 import streamlit as st
 from typing import List
+from utils import states
 
 
 @st.cache_data()
@@ -21,3 +22,16 @@ def getRoomNumbers() -> List[str]:
         for suiteNumber in range(13, 28)
     ]
     return sorted(roomNumbers)
+
+
+def initialiseSessionStates():
+    states.setState("bookingForm", {"friendIds": []})
+    states.setState(
+        "db",
+        {"bookings": None, "users": None},
+    )
+    states.setState("atPage", "main")
+    states.setState("calendar", {"allBookingsCache": None, "userBookingsCache": None})
+    states.setState("userInfo", {})
+    states.setState("isLoggedIn", False)
+    states.setState("isRegisteredUser", None)

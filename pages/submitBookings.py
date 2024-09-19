@@ -4,7 +4,7 @@ from datetime import timedelta, datetime
 import pytz
 from typing import List, Dict
 
-st.set_page_config("RC4ME - Book", layout="wide", page_icon="resources/rc4meLogo.jpg")
+st.set_page_config("RC4ME - Book", layout="wide", page_icon="resources/rc4meLogo.png")
 
 from utils import validations
 from helpers import menu

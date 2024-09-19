@@ -1,7 +1,7 @@
 import streamlit as st
 from datetime import date
 
-st.set_page_config("RC4ME - Login", layout="wide", page_icon="resources/rc4meLogo.jpg")
+st.set_page_config("RC4ME - Login", layout="wide", page_icon="resources/rc4meLogo.png")
 
 import helpers.main as helpers
 from helpers import menu, database, auth
@@ -11,17 +11,7 @@ menu.redirectIfAuthenticated()
 menu.displayMenu()
 
 st.title("RC4ME - Login")
-
-states.setState("bookingForm", {"friendIds": []})
-states.setState(
-    "db",
-    {"bookings": None, "users": None},
-)
-states.setState("atPage", "main")
-states.setState("calendar", {"allBookingsCache": None, "userBookingsCache": None})
-states.setState("userInfo", {})
-states.setState("isLoggedIn", False)
-states.setState("isRegisteredUser", None)
+helpers.initialiseSessionStates()
 
 # st.json(st.session_state, expanded=False)
 
@@ -46,7 +36,10 @@ if not st.session_state["isRegisteredUser"]:
     studentId = st.text_input("Student ID (eg. `E1234567`)")
     teleHandle = st.text_input("Telegram handle")
     roomNumber = st.selectbox(
-        "Room number", placeholder="Enter room number", options=helpers.getRoomNumbers(), index=None
+        "Room number",
+        placeholder="Enter room number",
+        options=helpers.getRoomNumbers(),
+        index=None,
     )
     gradYear = st.number_input(
         "Year of graduation",
