@@ -37,21 +37,30 @@ if calendarEvent.get("callback", "") == "eventClick":
     event = calendarEvent["eventClick"]["event"]
     bookingUid = event["extendedProps"]["uuid"]
     booking = database.getBookingByUid(bookingUid)
+    booking["start"] = (
+        booking["booking_start_date"] + " " + booking["booking_start_time"]
+    )
+    booking["end"] = booking["booking_end_date"] + " " + booking["booking_end_time"]
+    start = datetime.fromisoformat(event["start"])
+    end = datetime.fromisoformat(event["end"])
 
     st.subheader(event["title"])
     st.dataframe(
         booking[
             [
-                "booking_description",
+                "start",
+                "end",
                 "name",
                 "student_id",
-                "tele_handle",
+                "phone_number",
                 "friend_ids",
+                "tele_handle",
+                "booking_description",
                 "status",
             ]
-        ]
+        ],
+        use_container_width=True,
     )
-    start = datetime.fromisoformat(event["start"])
 
     col1, col2, col3, col4 = st.columns(4)
     try:

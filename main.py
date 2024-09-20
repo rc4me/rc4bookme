@@ -5,7 +5,7 @@ st.set_page_config("RC4ME - Login", layout="wide", page_icon="resources/rc4meLog
 
 import helpers.main as helpers
 from helpers import menu, database, auth
-from utils import validations, states
+from utils import validations
 
 menu.redirectIfAuthenticated()
 menu.displayMenu()
@@ -35,6 +35,7 @@ if not st.session_state["isRegisteredUser"]:
     name = st.text_input("Full name (as in matriculation card)")
     studentId = st.text_input("Student ID (eg. `E1234567`)")
     teleHandle = st.text_input("Telegram handle")
+    phoneNumber = st.text_input("Contact number")
     roomNumber = st.selectbox(
         "Room number",
         placeholder="Enter room number",
@@ -51,19 +52,21 @@ if not st.session_state["isRegisteredUser"]:
         "Register",
         type="primary",
         disabled=not validations.isValidStudentId(studentId)
+        or not validations.isValidPhoneNumber(phoneNumber)
         or teleHandle is None
         or gradYear is None
         or roomNumber is None,
     ):
         try:
             with st.spinner("Registering..."):
-                if database.isAlreadyRegistered(studentId, teleHandle):
+                if database.isAlreadyRegistered(studentId, teleHandle, phoneNumber):
                     raise ValueError(
-                        "Your Telegram handle / Student ID is already registered."
+                        "Your Telegram handle / Student ID / contact number is already registered."
                     )
                 database.registerStudent(
                     studentId,
                     teleHandle,
+                    phoneNumber,
                     st.session_state["userInfo"]["email"],
                     name,
                     roomNumber,

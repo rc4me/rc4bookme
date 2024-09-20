@@ -39,26 +39,29 @@ def getUserDetails(email: str) -> Dict[str, str]:
     refreshUsers()
     return dict(
         st.session_state["db"]["users"][
-            ["tele_handle", "student_id", "name", "user_type"]
+            ["tele_handle", "student_id", "name", "phone_number", "user_type"]
         ]
         .rename(
             columns={
                 "tele_handle": "teleHandle",
                 "student_id": "studentId",
                 "user_type": "userType",
+                "phone_number": "phoneNumber",
             }
         )
         .loc[email]
     )
 
 
-def isAlreadyRegistered(studentId: str, teleHandle: str):
+def isAlreadyRegistered(studentId: str, teleHandle: str, phoneNumber: str) -> bool:
     refreshUsers()
     studentId = studentId.upper()
     teleHandle = teleHandle.strip("@")
+    phoneNumber = phoneNumber.replace(" ", "")
     isAlreadyRegistered = (
         studentId in st.session_state["db"]["users"]["student_id"].values
         or teleHandle in st.session_state["db"]["users"]["tele_handle"].values
+        or phoneNumber in st.session_state["db"]["users"]["phone_number"].values
     )
     return isAlreadyRegistered
 
@@ -66,6 +69,7 @@ def isAlreadyRegistered(studentId: str, teleHandle: str):
 def registerStudent(
     studentId: str,
     teleHandle: str,
+    phoneNumber: str,
     email: str,
     name: str,
     roomNumber: str,
@@ -77,6 +81,7 @@ def registerStudent(
         name.title(),
         studentId.upper(),
         teleHandle.strip("@"),
+        phoneNumber.replace(" ", ""),
         roomNumber,
         gradYear,
         "user",
@@ -107,6 +112,7 @@ def addBooking(
     endTs: datetime,
     studentId: str,
     teleHandle: str,
+    phoneNumber: str,
     bookingDescription: str,
     friendIds: List[str],
 ):
@@ -121,6 +127,7 @@ def addBooking(
         endTs.time().isoformat(),
         studentId,
         teleHandle,
+        str(phoneNumber),
         bookingDescription,
         json.dumps(friendIds),
         startTs.timestamp() * 1000,

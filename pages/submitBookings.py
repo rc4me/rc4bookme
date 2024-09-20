@@ -13,6 +13,8 @@ import helpers.submitBookings as helpers
 menu.redirectIfUnauthenticated()
 menu.displayMenu()
 
+st.json(st.session_state, expanded=False)
+
 st.header("TR3 availability")
 if (
     st.button("Refresh calendar")
@@ -86,6 +88,7 @@ if st.button("Submit", type="primary", disabled=endTs is None or startTs is None
                 endTs,
                 st.session_state["userInfo"]["studentId"],
                 st.session_state["userInfo"]["teleHandle"],
+                st.session_state["userInfo"]["phoneNumber"],
                 st.session_state["userInfo"]["name"],
                 friendIds=friendIds,
                 event=bookingDescription,

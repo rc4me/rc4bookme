@@ -34,6 +34,7 @@ def tryInsertBooking(
     endTs: datetime,
     studentId: str,
     teleHandle: str,
+    phoneNumber: str,
     name: str,
     event: Optional[str] = "Regular booking",
     friendIds: Optional[List[str]] = [],
@@ -46,6 +47,7 @@ def tryInsertBooking(
         endTs,
         studentId,
         teleHandle,
+        phoneNumber,
         bookingDescription=event,
         friendIds=friendIds,
     )

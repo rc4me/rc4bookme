@@ -15,6 +15,17 @@ def isValidStudentId(studentId: str | None) -> bool:
     return True
 
 
+def isValidPhoneNumber(number: str | None) -> bool:
+    if number is None:
+        return False
+    if len(number) < 8:
+        return False
+    for char in number:
+        if not char.isnumeric() and char not in ["-", "+", " "]:
+            return False
+    return True
+
+
 def verifyBookingPeriod(start: datetime, end: datetime):
     now = datetime.now(tz=pytz.timezone("Singapore"))
     if start > end:
