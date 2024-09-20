@@ -25,7 +25,7 @@ def refreshBookings():
     bookingsDf = pd.DataFrame(spreadsheet.worksheet("Bookings").get_all_records())
     bookingsDf = bookingsDf.set_index("booking_uid", drop=True)
     if len(bookingsDf) != 0:
-        bookingsDf["friend_ids"] = bookingsDf["friend_ids"].apsourcply(json.loads).apply(set)
+        bookingsDf["friend_ids"] = bookingsDf["friend_ids"].apply(json.loads).apply(set)
     st.session_state["db"]["bookings"] = bookingsDf
 
 
