@@ -18,28 +18,35 @@ calendarsState = st.session_state["calendar"]
 studentId = st.session_state["userInfo"]["studentId"]
 
 st.title("View bookings")
-
+# st.json(st.session_state, expanded=False)
 if (
     st.session_state["calendar"]["userBookingsCache"] is None
     or st.button("Refresh calendar")
     or st.session_state["atPage"] != "viewYourBookings"
 ):
+    st.session_state["notification"] = None
     st.session_state["atPage"] = "viewYourBookings"
     with st.spinner("Getting bookings..."):
         helpers.updateUserBookingsCache(studentId)
+
+if st.session_state["notification"] is not None:
+    st.info(st.session_state["notification"])
 
 calendarOptions = helpers.getCalendarOptions()
 calendarEvent = calendar(
     st.session_state["calendar"]["userBookingsCache"], options=calendarOptions
 )
 
+
+pendingEventClicked = False
 if calendarEvent.get("callback", "") == "eventClick":
     bookingUid = calendarEvent["eventClick"]["event"]["extendedProps"]["uuid"]
     try:
-        booking = helpers.getBookingByUid(bookingUid)
+        booking = database.getBookingByUid(bookingUid)
     except KeyError:
         booking = {"status": ""}
     if booking["status"] == "P":
+        pendingEventClicked = True
         isAdmin = st.session_state["userInfo"]["userType"] == "admin"
         oldStartTs = datetime.fromtimestamp(
             booking["start_unix_ms"] / 1000, tz=pytz.timezone("Singapore")
@@ -87,16 +94,25 @@ if calendarEvent.get("callback", "") == "eventClick":
                     validations.verifyBookingPeriod(newStartTs, newEndTs)
                     if database.timeSlotIsTaken(newStartTs, newEndTs):
                         raise ValueError("Time slot has already been taken")
-                    helpers.editBookingTiming(bookingUid, newStartTs, newEndTs)
+                    database.editBookingTiming(bookingUid, newStartTs, newEndTs)
                     helpers.updateUserBookingsCache(studentId)
-                st.info("Booking edited! Please refresh your calendar.")
-                # TODO: refresh bookings automatically
+                st.session_state["notification"] = (
+                    f"Booking on {oldStartTs.date().isoformat()} edited!"
+                )
+                st.rerun()
             except (ValueError, KeyError) as e:
-                st.warning(str(e))
+                st.error(str(e))
         if st.button("Cancel booking", type="primary"):
             try:
                 with st.spinner("Cancelling booking..."):
-                    helpers.cancelBooking(bookingUid)
-                st.info("Booking cancelled. Please refresh your calendar.")
+                    database.deleteBooking(bookingUid)
+                    helpers.updateUserBookingsCache(studentId)
+                st.session_state["notification"] = (
+                    f"Booking on {oldStartTs.date().isoformat()} cancelled."
+                )
+                st.rerun()
             except KeyError as e:
-                st.warning(body=str(e))
+                st.error(str(e))
+
+if not pendingEventClicked:
+    st.markdown("Click on any pending bookings to edit or cancel them.")

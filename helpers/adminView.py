@@ -8,20 +8,24 @@ from helpers import database
 
 def getAdminBookings() -> List[Dict]:
     database.refreshBookings()
-    df = st.session_state["db"]["bookings"]
-    newdf = pd.DataFrame()
+    df: pd.DataFrame = st.session_state["db"]["bookings"]
+    newDf = pd.DataFrame()
     colourMappings = {
         "A": "green",
         "P": "#8B8000",
         "R": "red",
     }
-    newdf["title"] = (
+    newDf["title"] = (
         df["booking_description"] + " - " + df["name"] + " (@" + df["tele_handle"] + ")"
     )
-    newdf["color"] = df["status"].replace(colourMappings)
-    newdf["start"] = df["start_unix_ms"]
-    newdf["end"] = df["end_unix_ms"]
-    return newdf.to_dict(orient="records")
+    newDf["color"] = df["status"].replace(colourMappings)
+    newDf["start"] = df["start_unix_ms"]
+    newDf["end"] = df["end_unix_ms"]
+    newDf["extendedProps"] = df.apply(
+        lambda row: {"uuid": row.name},
+        axis=1,
+    )
+    return newDf.to_dict(orient="records")
 
 
 def updateAdminBookingsCache():

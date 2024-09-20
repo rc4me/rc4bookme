@@ -92,4 +92,4 @@ if st.button("Submit", type="primary", disabled=endTs is None or startTs is None
             )
         st.info("Booking submitted!")
     except ValueError as e:
-        st.warning(str(e))
+        st.error(str(e))

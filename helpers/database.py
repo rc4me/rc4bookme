@@ -22,7 +22,7 @@ def refreshUsers():
 
 
 def refreshBookings():
-    bookingsDf = pd.DataFrame(spreadsheet.worksheet("Bookings").get_all_records())
+    bookingsDf = pd.DataFrame(spreadsheet.worksheet("Testing").get_all_records())
     bookingsDf = bookingsDf.set_index("booking_uid", drop=True)
     if len(bookingsDf) != 0:
         bookingsDf["friend_ids"] = bookingsDf["friend_ids"].apply(json.loads).apply(set)
@@ -196,3 +196,75 @@ def writeToDb(newDf: pd.DataFrame, worksheetName: str):
     """
     bookingsWorksheet = spreadsheet.worksheet(worksheetName)
     bookingsWorksheet.update([newDf.columns.values.tolist()] + newDf.values.tolist())
+
+
+def getBookingByUid(uuid: str) -> pd.Series:
+    bookingsDf: pd.DataFrame = st.session_state["db"]["bookings"]
+    booking = bookingsDf.loc[uuid,]
+    return booking
+
+
+def editBookingTiming(uuid: str, newStart: datetime, newEnd: datetime):
+    refreshBookings()
+    bookingsDf: pd.DataFrame = st.session_state["db"]["bookings"].copy()
+    try:
+        bookingsDf.loc[
+            uuid,
+            [
+                "booking_start_date",
+                "booking_start_time",
+                "booking_end_date",
+                "booking_end_time",
+                "start_unix_ms",
+                "end_unix_ms",
+            ],
+        ] = (
+            newStart.date().isoformat(),
+            newStart.time().isoformat(),
+            newEnd.date().isoformat(),
+            newEnd.time().isoformat(),
+            newStart.timestamp() * 1000,
+            newEnd.timestamp() * 1000,
+        )
+        bookingsDf["friend_ids"] = (
+            bookingsDf["friend_ids"].apply(list).apply(json.dumps)
+        )
+        bookingsDf["booking_uid"] = bookingsDf.index
+        bookingsDf = bookingsDf.reset_index(drop=True)
+        writeToDb(bookingsDf, "Bookings")
+    except KeyError:
+        raise KeyError("Booking not found. Please refresh your calendar")
+
+
+def deleteBooking(uuid: str):
+    refreshBookings()
+    bookingsDf: pd.DataFrame = st.session_state["db"]["bookings"].copy()
+    try:
+        bookingsDf = bookingsDf.drop(index=uuid)
+        bookingsDf["friend_ids"] = (
+            bookingsDf["friend_ids"].apply(list).apply(json.dumps)
+        )
+        bookingsDf["booking_uid"] = bookingsDf.index
+        bookingsDf = bookingsDf.reset_index(drop=True)
+        dummyRow = pd.DataFrame(
+            [["" for column in bookingsDf.columns]], columns=bookingsDf.columns
+        )
+        bookingsDf = pd.concat([bookingsDf, dummyRow])
+        writeToDb(bookingsDf, "Bookings")
+    except KeyError:
+        raise KeyError("Booking not found. Please refresh your calendar")
+
+
+def editBookingStatus(uuid: str, status: str):
+    refreshBookings()
+    bookingsDf: pd.DataFrame = st.session_state["db"]["bookings"].copy()
+    try:
+        bookingsDf.loc[uuid, "status"] = status
+        bookingsDf["friend_ids"] = (
+            bookingsDf["friend_ids"].apply(list).apply(json.dumps)
+        )
+        bookingsDf["booking_uid"] = bookingsDf.index
+        bookingsDf = bookingsDf.reset_index(drop=True)
+        writeToDb(bookingsDf, "Testing")
+    except KeyError:
+        raise KeyError("Booking not found. Please refresh your calendar")

@@ -35,6 +35,7 @@ def initialiseSessionStates():
             "adminBookingsCache": None,
         },
     )
+    states.setState("notification", None)
     states.setState("userInfo", {})
     states.setState("isLoggedIn", False)
     states.setState("isRegisteredUser", None)
