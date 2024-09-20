@@ -13,7 +13,7 @@ import helpers.submitBookings as helpers
 menu.redirectIfUnauthenticated()
 menu.displayMenu()
 
-st.json(st.session_state, expanded=False)
+# st.json(st.session_state, expanded=False)
 
 st.header("TR3 availability")
 if (
