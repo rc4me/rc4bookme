@@ -137,7 +137,7 @@ def addBooking(
     sheet.append_row(row)
 
 
-def getApprovedBookings() -> pd.DataFrame:
+def getPendingAndApprovedBookings() -> pd.DataFrame:
     refreshBookings()
     if len(st.session_state["db"]["bookings"]) == 0:
         return pd.DataFrame(
@@ -163,7 +163,7 @@ def getApprovedBookings() -> pd.DataFrame:
             "end_unix_ms",
             "friend_ids",
         ]
-    ].query("(status == 'a' | status == 'A')")
+    ].query("(status == 'P' | status == 'A')")
 
 
 def getBookingsForUser(studentId: str) -> pd.DataFrame:

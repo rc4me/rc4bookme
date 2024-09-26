@@ -54,7 +54,7 @@ def tryInsertBooking(
 
 
 def getBookingsForCalendar() -> List[Dict]:
-    df = database.getApprovedBookings()
+    df = database.getPendingAndApprovedBookings()
     if len(df) == 0:
         return []
 
@@ -62,18 +62,21 @@ def getBookingsForCalendar() -> List[Dict]:
     newDf = pd.DataFrame()
     newDf["start"] = df["start_unix_ms"]
     newDf["end"] = df["end_unix_ms"]
-    newDf["title"] = (
-        df["booking_description"]
-        + " - booked by "
-        + df["name"]
-        + " (@"
-        + df["tele_handle"]
-        + ")"
+    newDf["title"] = df.apply(
+        lambda row: (
+            (row["booking_description"] if row["status"] == "A" else "Pending booking")
+            + " - booked by "
+            + row["name"]
+            + " (@"
+            + row["tele_handle"]
+            + ")"
+        ),
+        axis=1,
     )
     newDf["color"] = df.apply(
         lambda row: "green"
         if row["student_id"] == studentId or studentId in row["friend_ids"]
-        else "gray",
+        else ("#2E8D87" if row["status"] == "A" else "gray"),
         axis=1,
     )
     return newDf.to_dict(orient="records")
