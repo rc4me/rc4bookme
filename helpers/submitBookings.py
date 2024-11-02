@@ -74,7 +74,7 @@ def getBookingsForCalendar() -> List[Dict]:
         axis=1,
     )
     newDf["color"] = df.apply(
-        lambda row: "green"
+        lambda row: ("green" if row["status"] == "A" else "#8B8000")
         if row["student_id"] == studentId or studentId in row["friend_ids"]
         else ("#2E8D87" if row["status"] == "A" else "gray"),
         axis=1,
