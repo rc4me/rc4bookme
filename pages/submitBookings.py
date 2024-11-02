@@ -74,9 +74,12 @@ if st.session_state["userInfo"]["userType"] == "admin":
 
 friendList: List = st.session_state["bookingForm"]["friendIds"]
 allUsers = helpers.getAllUsers()
-friends = st.multiselect(
-    "Booking used with:", options=allUsers, placeholder="Enter names..."
-)
+if st.checkbox("I'm using TR3 with friends!"):
+    friends = st.multiselect(
+        "Booking used with:", options=allUsers, placeholder="Enter names..."
+    )
+else:
+    friends = []
 friendIds = [allUsers[friend] for friend in friends]
 
 if st.button("Submit", type="primary", disabled=endTs is None or startTs is None):
