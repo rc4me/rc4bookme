@@ -10,9 +10,10 @@ scope = [
     "https://spreadsheets.google.com/feeds",
     "https://www.googleapis.com/auth/drive",
 ]
-spreadsheet = gspread.service_account_from_dict(
+serviceAccount = gspread.service_account_from_dict(
     st.secrets["serviceAccount"], scopes=scope
-).open("RC4MEDB")
+)
+spreadsheet = serviceAccount.open("RC4MEDB")
 
 
 def refreshUsers():
