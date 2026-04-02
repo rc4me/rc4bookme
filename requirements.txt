@@ -3,3 +3,4 @@ streamlit-calendar
 httpx-oauth
 st-gsheets-connection
 gspread
+pytz
