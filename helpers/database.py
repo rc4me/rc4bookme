@@ -207,8 +207,11 @@ def writeToDb(newDf: pd.DataFrame, worksheetName: str):
 
 
 def getBookingByUid(uuid: str) -> pd.Series:
+    refreshBookings()
     bookingsDf: pd.DataFrame = st.session_state["db"]["bookings"]
-    booking = bookingsDf.loc[uuid,]
+    if uuid not in bookingsDf.index:
+        raise KeyError(f"Booking with UUID '{uuid}' not found. It may have been deleted.")
+    booking = bookingsDf.loc[uuid]
     return booking
 
 
