@@ -212,5 +212,5 @@ def notifyAdminAction(
 
     except Exception as e:
         logger.error(f"Error in notifyAdminAction: {str(e)}")
-        st.toast(f"❌ Notification error: {str(e)}")
+        raise
 

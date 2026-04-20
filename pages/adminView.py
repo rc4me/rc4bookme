@@ -73,56 +73,60 @@ if calendarEvent.get("callback", "") == "eventClick":
                 with st.spinner("Approving booking..."):
                     database.editBookingStatus(bookingUid, "A")
                     helpers.updateAdminBookingsCache()
+                try:
                     notifications.notifyAdminAction(
                         "approved", adminName, booking["booking_description"],
                         booking["name"], booking["student_id"], start, end,
                         booking["booking_description"],
                     )
-                st.session_state["notification"] = (
-                    f"Booking by {booking['name']} on {start.strftime('%c')} approved!"
-                )
+                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} approved! ✅ Notification sent."
+                except Exception as e:
+                    st.session_state["notification"] = f"Booking approved but notification failed: {e}"
                 st.rerun()
         with col2:
             if st.button("Mark as pending", disabled=booking["status"] == "P"):
                 with st.spinner("Marking booking as pending..."):
                     database.editBookingStatus(bookingUid, "P")
                     helpers.updateAdminBookingsCache()
+                try:
                     notifications.notifyAdminAction(
                         "pending", adminName, booking["booking_description"],
                         booking["name"], booking["student_id"], start, end,
                         booking["booking_description"],
                     )
-                st.session_state["notification"] = (
-                    f"Booking by {booking['name']} on {start.strftime('%c')} marked as pending."
-                )
+                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} marked as pending. ✅ Notification sent."
+                except Exception as e:
+                    st.session_state["notification"] = f"Booking marked pending but notification failed: {e}"
                 st.rerun()
         with col3:
             if st.button("Mark as rejected", disabled=booking["status"] == "R"):
                 with st.spinner("Rejecting booking..."):
                     database.editBookingStatus(bookingUid, "R")
                     helpers.updateAdminBookingsCache()
+                try:
                     notifications.notifyAdminAction(
                         "rejected", adminName, booking["booking_description"],
                         booking["name"], booking["student_id"], start, end,
                         booking["booking_description"],
                     )
-                st.session_state["notification"] = (
-                    f"Booking by {booking['name']} on {start.strftime('%c')} rejected."
-                )
+                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} rejected. ✅ Notification sent."
+                except Exception as e:
+                    st.session_state["notification"] = f"Booking rejected but notification failed: {e}"
                 st.rerun()
         with col4:
             if st.button("Delete booking"):
                 with st.spinner("Deleting booking..."):
                     database.deleteBooking(bookingUid)
                     helpers.updateAdminBookingsCache()
+                try:
                     notifications.notifyAdminAction(
                         "deleted", adminName, booking["booking_description"],
                         booking["name"], booking["student_id"], start, end,
                         booking["booking_description"],
                     )
-                st.session_state["notification"] = (
-                    f"Booking by {booking['name']} on {start.strftime('%c')} deleted."
-                )
+                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} deleted. ✅ Notification sent."
+                except Exception as e:
+                    st.session_state["notification"] = f"Booking deleted but notification failed: {e}"
                 st.rerun()
     except KeyError as e:
         st.error(str(e))
