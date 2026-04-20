@@ -6,7 +6,7 @@
     "headerToolbar": {
         "left": "today prev,next",
         "center": "title",
-        "right": "dayGridMonth,listWeek"
+        "right": "listMonth,listWeek"
     },
     "initialView": "listWeek",
     "navLinks": true,
@@ -18,6 +18,10 @@
         "hour12": false
     },
     "dayMaxEventRows": false,
+    "buttonText": {
+        "listMonth": "month",
+        "listWeek": "week"
+    },
     "resourceGroupField": "building",
     "resources": [
         {"id": "TR3", "title": "TR3"}
