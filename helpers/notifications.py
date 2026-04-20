@@ -166,7 +166,6 @@ def notifyAdminAction(
 ) -> None:
     """
     Send Telegram notification when an admin approves/rejects/deletes/edits a booking.
-    Fails silently.
     """
     try:
         try:
@@ -175,10 +174,12 @@ def notifyAdminAction(
             admin_chat_id = str(telegram_secrets["admin_chat_id"])
         except Exception as e:
             logger.warning(f"Could not read telegram secrets: {e}")
+            st.toast(f"⚠️ Telegram secrets error: {e}")
             bot_token = BOT_TOKEN
             admin_chat_id = None
 
         if not bot_token or not admin_chat_id:
+            st.toast("⚠️ Bot token or chat ID missing")
             return
 
         action_emoji = {
@@ -207,8 +208,9 @@ def notifyAdminAction(
         )
 
         send_telegram_message_by_id(bot_token, admin_chat_id, message)
-        logger.info(f"Admin action notification sent: {action}")
+        st.toast(f"📨 Notification sent: {action}")
 
     except Exception as e:
         logger.error(f"Error in notifyAdminAction: {str(e)}")
+        st.toast(f"❌ Notification error: {str(e)}")
 
