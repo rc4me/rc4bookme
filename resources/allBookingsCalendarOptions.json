@@ -8,7 +8,7 @@
         "center": "title",
         "right": "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
     },
-    "initialView": "dayGridMonth",
+    "initialView": "timeGridWeek",
     "scrollTime": "09:00:00",
     "navLinks": true,
     "nowIndicator": true,

@@ -26,8 +26,19 @@ if (
         helpers.updateAllBookingsCache()
 
 calendarOptions = helpers.getCalendarOptions()
+custom_css = """
+    .fc-daygrid-event {
+        white-space: normal !important;
+        overflow: visible !important;
+    }
+    .fc-event-title {
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+    }
+"""
+
 calendarEvent: Dict = calendar(
-    st.session_state["calendar"]["allBookingsCache"], options=calendarOptions
+    st.session_state["calendar"]["allBookingsCache"], options=calendarOptions, custom_css=custom_css
 )
 if calendarEvent.get("callback", "") == "eventClick":
     components = calendarEvent["eventClick"]["event"]["title"].split("@")
