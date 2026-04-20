@@ -2,7 +2,7 @@
     "editable": false,
     "eventInteractive": true,
     "allDaySlot": false,
-    "height": 1200,
+    "height": 650,
     "headerToolbar": {
         "left": "today prev,next",
         "center": "title",
