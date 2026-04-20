@@ -1,5 +1,6 @@
 import streamlit as st
 import asyncio
+import extra_streamlit_components as stx
 
 from httpx_oauth.clients.google import GoogleOAuth2
 from httpx_oauth import oauth2
@@ -10,6 +11,10 @@ CLIENT_SECRET = oauthCredentials["CLIENT_SECRET"]
 REDIRECT_URI = oauthCredentials["REDIRECT_URI"]
 
 client = GoogleOAuth2(CLIENT_ID, CLIENT_SECRET)
+
+
+def get_cookie_manager():
+    return stx.CookieManager()
 
 
 async def getAuthUrl(client: GoogleOAuth2, redirect_uri: str):
@@ -45,14 +50,29 @@ def displayLoginButton():
 
 
 def getUserEmail() -> str | None:
+    cookie_manager = get_cookie_manager()
+
+    # First check if we have a saved email in cookie
+    saved_email = cookie_manager.get("rc4me_user_email")
+    if saved_email:
+        return saved_email
+
+    # Otherwise try to get from OAuth code
     try:
         code = st.query_params.code
-        # Ensure the code is properly extracted from the query params
-        # code = code[0]  # Assuming code comes as a list
         token = asyncio.run(getAccessToken(client, REDIRECT_URI, code))
         user_id, user_email = asyncio.run(
             getUserIdAndEmail(client, token["access_token"])
         )
+        # Save email to cookie (expires in 7 days)
+        cookie_manager.set("rc4me_user_email", user_email, expires_at=None, key="set_email")
         return user_email
     except (AttributeError, oauth2.GetAccessTokenError):
         return None
+
+
+def clearUserSession():
+    """Clear the user's cookie on logout."""
+    cookie_manager = get_cookie_manager()
+    cookie_manager.delete("rc4me_user_email", key="delete_email")
+
