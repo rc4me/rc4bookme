@@ -128,25 +128,25 @@ def format_booking_notification(
     Format the notification message.
     """
     start_str = startTs.strftime("%d %b, %H:%M")
-    end_str = endTs.strftime("%H:%M")
+    end_str = endTs.strftime("%d %b, %H:%M")
 
-    message = f"""
-<b>📅 New Booking Submitted</b>
-
-<b>Booking:</b> {bookingDescription}
-<b>Name:</b> {studentName}
-<b>Student ID:</b> {studentId}
-<b>Telegram:</b> @{teleHandle}
-<b>Phone:</b> {phoneNumber}
-
-<b>📍 Time Slot</b>
-<b>Start:</b> {start_str}
-<b>End:</b> {end_str}
-
-<b>Status:</b> ⏳ Pending Approval
-
-View in admin dashboard to approve or reject.
-    """.strip()
+    message = (
+        f"📅 <b>New Booking Submitted</b>\n"
+        f"\n"
+        f"<b>Booking description:</b> {bookingDescription}\n"
+        f"<b>Name:</b> {studentName}\n"
+        f"<b>Student ID:</b> {studentId}\n"
+        f"<b>Telegram:</b> @{teleHandle}\n"
+        f"<b>Phone:</b> {phoneNumber}\n"
+        f"\n"
+        f"📍 <b>Time Slot</b>\n"
+        f"<b>Start:</b> {start_str}\n"
+        f"<b>End:</b> {end_str}\n"
+        f"\n"
+        f"<b>Status:</b> ⏳ Pending Approval\n"
+        f"\n"
+        f"View in admin dashboard to approve or reject."
+    )
 
     return message
 
