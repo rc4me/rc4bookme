@@ -26,12 +26,6 @@ def notifyAdminsOfNewBooking(
     Fails silently - doesn't crash the booking if notification fails.
     """
     try:
-        # Skip notification if booking end time is more than 24 hours in the past
-        # (using generous buffer to handle timezone differences between server and local time)
-        from datetime import timedelta
-        if endTs < datetime.now() - timedelta(hours=24):
-            logger.info("Booking is in the past. Skipping notification.")
-            return
 
         try:
             telegram_secrets = st.secrets["telegram"]
