@@ -61,13 +61,12 @@ custom_css = """
         overflow-y: auto !important;
     }
     .fc-timegrid-now-indicator-line {
-        border-color: #6C63FF !important;
+        border-color: #FF7043 !important;
         border-width: 2px !important;
         border-style: dashed !important;
-        opacity: 0.8 !important;
     }
     .fc-timegrid-now-indicator-arrow {
-        border-color: #6C63FF !important;
+        display: none !important;
     }
 """
 
