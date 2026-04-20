@@ -2,13 +2,14 @@
     "editable": false,
     "eventInteractive": true,
     "allDaySlot": false,
-    "height": 800,
+    "height": 650,
     "headerToolbar": {
         "left": "today prev,next",
         "center": "title",
-        "right": "listMonth,listWeek"
+        "right": "listMonth,timeGridWeek,timeGridDay"
     },
-    "initialView": "listWeek",
+    "initialView": "timeGridWeek",
+    "scrollTime": "09:00:00",
     "navLinks": true,
     "nowIndicator": true,
     "displayEventTime": true,
@@ -20,7 +21,8 @@
     "dayMaxEventRows": false,
     "buttonText": {
         "listMonth": "month",
-        "listWeek": "week"
+        "timeGridWeek": "week",
+        "timeGridDay": "day"
     },
     "resourceGroupField": "building",
     "resources": [

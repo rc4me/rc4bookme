@@ -33,8 +33,39 @@ if st.session_state["notification"] is not None:
     st.info(st.session_state["notification"])
 
 calendarOptions = helpers.getCalendarOptions()
+custom_css = """
+    .fc-daygrid-event {
+        white-space: normal !important;
+        overflow: hidden !important;
+    }
+    .fc-daygrid-event .fc-event-main {
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 2px 4px !important;
+    }
+    .fc-daygrid-event .fc-event-time {
+        font-weight: bold !important;
+        font-size: 0.85em !important;
+    }
+    .fc-event-title {
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: break-word !important;
+        font-size: 0.85em !important;
+    }
+    .fc-daygrid-day-events {
+        overflow: hidden !important;
+    }
+    .fc-daygrid-event-harness {
+        margin-bottom: 2px !important;
+    }
+    .fc-list {
+        max-height: 700px !important;
+        overflow-y: auto !important;
+    }
+"""
 calendarEvent = calendar(
-    st.session_state["calendar"]["userBookingsCache"], options=calendarOptions
+    st.session_state["calendar"]["userBookingsCache"], options=calendarOptions, custom_css=custom_css
 )
 
 
