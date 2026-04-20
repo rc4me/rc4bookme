@@ -2,7 +2,7 @@
     "editable": false,
     "eventInteractive": true,
     "allDaySlot": false,
-    "height": 650,
+    "height": "auto",
     "headerToolbar": {
         "left": "today prev,next",
         "center": "title",
@@ -17,7 +17,7 @@
         "minute": "2-digit",
         "hour12": false
     },
-    "dayMaxEventRows": true,
+    "dayMaxEventRows": false,
     "resourceGroupField": "building",
     "resources": [
         {"id": "TR3", "title": "TR3"}
