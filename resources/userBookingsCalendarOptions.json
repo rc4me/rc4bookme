@@ -1,13 +1,16 @@
 {
     "editable": false,
     "eventInteractive": true,
-    "height": 600,
+    "allDaySlot": false,
+    "height": 650,
     "headerToolbar": {
-        "left": "today",
+        "left": "today prev,next",
         "center": "title",
-        "right": "prev,next"
+        "right": "dayGridMonth,listWeek"
     },
     "initialView": "listWeek",
+    "navLinks": true,
+    "nowIndicator": true,
     "resourceGroupField": "building",
     "resources": [
         {"id": "TR3", "title": "TR3"}
