@@ -57,11 +57,13 @@ custom_css = """
         overflow-y: auto !important;
     }
     .fc-timegrid-now-indicator-line {
-        border-color: #FF4500 !important;
-        border-width: 2.5px !important;
+        border-color: #6C63FF !important;
+        border-width: 2px !important;
+        border-style: dashed !important;
+        opacity: 0.8 !important;
     }
     .fc-timegrid-now-indicator-arrow {
-        border-color: #FF4500 !important;
+        border-color: #6C63FF !important;
     }
 """
 
