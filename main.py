@@ -1,21 +1,14 @@
-import streamlit as st
+﻿import streamlit as st
 from datetime import date
 
-st.set_page_config("RC4ME - Login", layout="wide", page_icon="resources/rc4meLogo.png", initial_sidebar_state="collapsed")
+st.set_page_config("RC4ME - Login", layout="wide", page_icon="resources/rc4meLogo.png")
 
 import helpers.main as helpers
 from helpers import menu, database, auth
 from utils import validations
 
 menu.redirectIfAuthenticated()
-
-# Hide sidebar completely on login page
-st.markdown("""
-    <style>
-        [data-testid="collapsedControl"] { display: none; }
-        section[data-testid="stSidebar"] { display: none; }
-    </style>
-""", unsafe_allow_html=True)
+menu.displayMenu()
 
 st.title("RC4ME - Login")
 helpers.initialiseSessionStates()
