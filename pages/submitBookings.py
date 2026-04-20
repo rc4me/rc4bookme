@@ -52,6 +52,10 @@ custom_css = """
     .fc-daygrid-event-harness {
         margin-bottom: 2px !important;
     }
+    .fc-list {
+        max-height: 700px !important;
+        overflow-y: auto !important;
+    }
 """
 
 calendarEvent: Dict = calendar(
