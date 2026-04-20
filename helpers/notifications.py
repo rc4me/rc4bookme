@@ -153,3 +153,62 @@ def format_booking_notification(
 
     return message
 
+
+def notifyAdminAction(
+    action: str,
+    adminName: str,
+    bookingName: str,
+    studentName: str,
+    studentId: str,
+    startTs: datetime,
+    endTs: datetime,
+    bookingDescription: str,
+) -> None:
+    """
+    Send Telegram notification when an admin approves/rejects/deletes/edits a booking.
+    Fails silently.
+    """
+    try:
+        try:
+            telegram_secrets = st.secrets["telegram"]
+            bot_token = telegram_secrets["bot_token"]
+            admin_chat_id = str(telegram_secrets["admin_chat_id"])
+        except Exception as e:
+            logger.warning(f"Could not read telegram secrets: {e}")
+            bot_token = BOT_TOKEN
+            admin_chat_id = None
+
+        if not bot_token or not admin_chat_id:
+            return
+
+        action_emoji = {
+            "approved": "✅",
+            "rejected": "❌",
+            "deleted": "🗑️",
+            "pending": "⏳",
+            "edited": "✏️",
+        }.get(action, "ℹ️")
+
+        start_str = startTs.strftime("%d %b %Y, %H:%M")
+        end_str = endTs.strftime("%d %b %Y, %H:%M")
+
+        message = (
+            f"{action_emoji} <b>Booking {action.capitalize()}</b>\n"
+            f"\n"
+            f"<b>Action by:</b> {adminName}\n"
+            f"\n"
+            f"<b>Booking description:</b> {bookingDescription}\n"
+            f"<b>Name:</b> {studentName}\n"
+            f"<b>Student ID:</b> {studentId}\n"
+            f"\n"
+            f"📍 <b>Time Slot</b>\n"
+            f"<b>Start:</b> {start_str}\n"
+            f"<b>End:</b> {end_str}\n"
+        )
+
+        send_telegram_message_by_id(bot_token, admin_chat_id, message)
+        logger.info(f"Admin action notification sent: {action}")
+
+    except Exception as e:
+        logger.error(f"Error in notifyAdminAction: {str(e)}")
+
