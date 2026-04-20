@@ -22,64 +22,73 @@ def notifyAdminsOfNewBooking(
     bookingDescription: str,
 ) -> None:
     """
-    Send Telegram notification to all configured admin users.
+    Send Telegram notification to admin.
     Fails silently - doesn't crash the booking if notification fails.
     """
     try:
-        # Try to get bot token from secrets first (Streamlit Cloud)
-        # Fall back to hardcoded token for local testing
         try:
             bot_token = st.secrets.get("telegram", {}).get("bot_token", BOT_TOKEN)
+            admin_chat_id = st.secrets.get("telegram", {}).get("admin_chat_id")
         except:
             bot_token = BOT_TOKEN
+            admin_chat_id = None
 
         if not bot_token:
             logger.warning("Telegram bot token not configured. Skipping notification.")
             return
 
-        # Get all admin users
+        # Format the message
+        message = format_booking_notification(
+            bookingName, startTs, endTs, studentName, studentId, 
+            teleHandle, phoneNumber, bookingDescription
+        )
+
+        # If admin_chat_id is set, send only to that person (testing mode)
+        if admin_chat_id:
+            try:
+                send_telegram_message_by_id(bot_token, admin_chat_id, message)
+                logger.info(f"Notification sent to admin chat ID: {admin_chat_id}")
+            except Exception as e:
+                logger.error(f"Failed to notify admin: {str(e)}")
+            return
+
+        # Otherwise, send to all admins from Google Sheets
         from helpers import database
         database.refreshUsers()
         users_df = st.session_state["db"]["users"]
-
-        # Filter for admins who should receive notifications
         admins = users_df[users_df["user_type"] == "admin"]
-
-        # Optional: Only notify admins with notify_bookings = "yes"
-        # Uncomment if you add a "notify_bookings" column to your Users sheet
-        # if "notify_bookings" in admins.columns:
-        #     admins = admins[admins["notify_bookings"] == "yes"]
 
         if len(admins) == 0:
             logger.info("No admins configured for notifications.")
             return
 
-        # Format the message
-        message = format_booking_notification(
-            bookingName, startTs, endTs, studentName, studentId,
-            teleHandle, phoneNumber, bookingDescription
-        )
-
-        # Send to each admin
         for email, admin in admins.iterrows():
             tele_handle = admin.get("tele_handle", "")
             if not tele_handle or tele_handle.strip() == "":
-                logger.warning(f"Admin {email} has no Telegram handle. Skipping.")
                 continue
-
-            # Clean handle (remove @ if present)
             tele_handle = tele_handle.strip("@")
-
             try:
                 send_telegram_message(bot_token, tele_handle, message)
                 logger.info(f"Notification sent to admin: {tele_handle}")
             except Exception as e:
                 logger.error(f"Failed to notify {tele_handle}: {str(e)}")
-                # Continue to next admin, don't crash
 
     except Exception as e:
         logger.error(f"Error in notifyAdminsOfNewBooking: {str(e)}")
-        # Silently fail - don't interrupt the booking process
+
+
+def send_telegram_message_by_id(bot_token: str, chat_id: str, message: str) -> None:
+    """Send a Telegram message using a numeric chat ID."""
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    payload = {
+        "chat_id": chat_id,
+        "text": message,
+        "parse_mode": "HTML"
+    }
+    response = requests.post(url, json=payload, timeout=10)
+    if not response.ok:
+        error_data = response.json()
+        raise ValueError(f"Telegram API error: {error_data.get('description', 'Unknown error')}")
 
 
 def send_telegram_message(bot_token: str, user_handle: str, message: str) -> None:
