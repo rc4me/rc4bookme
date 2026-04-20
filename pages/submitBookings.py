@@ -56,6 +56,13 @@ custom_css = """
         max-height: 700px !important;
         overflow-y: auto !important;
     }
+    .fc-timegrid-now-indicator-line {
+        border-color: #FF4500 !important;
+        border-width: 2.5px !important;
+    }
+    .fc-timegrid-now-indicator-arrow {
+        border-color: #FF4500 !important;
+    }
 """
 
 calendarEvent: Dict = calendar(
