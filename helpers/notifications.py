@@ -127,8 +127,8 @@ def format_booking_notification(
     """
     Format the notification message.
     """
-    start_str = startTs.strftime("%d %b, %H:%M")
-    end_str = endTs.strftime("%d %b, %H:%M")
+    start_str = startTs.strftime("%d %b %Y, %H:%M")
+    end_str = endTs.strftime("%d %b %Y, %H:%M")
 
     message = (
         f"📅 <b>New Booking Submitted</b>\n"
