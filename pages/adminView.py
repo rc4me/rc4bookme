@@ -79,9 +79,9 @@ if calendarEvent.get("callback", "") == "eventClick":
                         booking["name"], booking["student_id"], start, end,
                         booking["booking_description"],
                     )
-                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} approved! ✅ Notification sent."
+                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} approved!"
                 except Exception as e:
-                    st.session_state["notification"] = f"Booking approved but notification failed: {e}"
+                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} approved!"
                 st.rerun()
         with col2:
             if st.button("Mark as pending", disabled=booking["status"] == "P"):
@@ -94,9 +94,9 @@ if calendarEvent.get("callback", "") == "eventClick":
                         booking["name"], booking["student_id"], start, end,
                         booking["booking_description"],
                     )
-                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} marked as pending. ✅ Notification sent."
+                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} marked as pending."
                 except Exception as e:
-                    st.session_state["notification"] = f"Booking marked pending but notification failed: {e}"
+                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} marked as pending."
                 st.rerun()
         with col3:
             if st.button("Mark as rejected", disabled=booking["status"] == "R"):
@@ -109,9 +109,9 @@ if calendarEvent.get("callback", "") == "eventClick":
                         booking["name"], booking["student_id"], start, end,
                         booking["booking_description"],
                     )
-                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} rejected. ✅ Notification sent."
+                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} rejected."
                 except Exception as e:
-                    st.session_state["notification"] = f"Booking rejected but notification failed: {e}"
+                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} rejected."
                 st.rerun()
         with col4:
             if st.button("Delete booking"):
@@ -124,9 +124,9 @@ if calendarEvent.get("callback", "") == "eventClick":
                         booking["name"], booking["student_id"], start, end,
                         booking["booking_description"],
                     )
-                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} deleted. ✅ Notification sent."
+                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} deleted."
                 except Exception as e:
-                    st.session_state["notification"] = f"Booking deleted but notification failed: {e}"
+                    st.session_state["notification"] = f"Booking by {booking['name']} on {start.strftime('%c')} deleted."
                 st.rerun()
     except KeyError as e:
         st.error(str(e))

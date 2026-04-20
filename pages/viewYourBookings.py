@@ -8,7 +8,7 @@ st.set_page_config(
 )
 
 import helpers.viewYourBookings as helpers
-from helpers import menu, database
+from helpers import menu, database, notifications
 from utils import validations
 
 menu.redirectIfUnauthenticated()
@@ -96,6 +96,15 @@ if calendarEvent.get("callback", "") == "eventClick":
                         raise ValueError("Time slot has already been taken")
                     database.editBookingTiming(bookingUid, newStartTs, newEndTs)
                     helpers.updateUserBookingsCache(studentId)
+                userName = st.session_state["userInfo"].get("name", "Unknown")
+                try:
+                    notifications.notifyAdminAction(
+                        "edited", userName, booking.get("booking_description", ""),
+                        booking["name"], booking["student_id"], newStartTs, newEndTs,
+                        booking.get("booking_description", ""),
+                    )
+                except Exception:
+                    pass
                 st.session_state["notification"] = (
                     f"Booking on {oldStartTs.date().isoformat()} edited!"
                 )
@@ -107,6 +116,15 @@ if calendarEvent.get("callback", "") == "eventClick":
                 with st.spinner("Cancelling booking..."):
                     database.deleteBooking(bookingUid)
                     helpers.updateUserBookingsCache(studentId)
+                userName = st.session_state["userInfo"].get("name", "Unknown")
+                try:
+                    notifications.notifyAdminAction(
+                        "cancelled", userName, booking.get("booking_description", ""),
+                        booking["name"], booking["student_id"], oldStartTs, oldEndTs,
+                        booking.get("booking_description", ""),
+                    )
+                except Exception:
+                    pass
                 st.session_state["notification"] = (
                     f"Booking on {oldStartTs.date().isoformat()} cancelled."
                 )
