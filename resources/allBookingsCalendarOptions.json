@@ -12,6 +12,13 @@
     "scrollTime": "09:00:00",
     "navLinks": true,
     "nowIndicator": true,
+    "displayEventTime": true,
+    "eventTimeFormat": {
+        "hour": "2-digit",
+        "minute": "2-digit",
+        "hour12": false
+    },
+    "dayMaxEventRows": true,
     "resourceGroupField": "building",
     "resources": [
         {"id": "TR3", "title": "TR3"}
