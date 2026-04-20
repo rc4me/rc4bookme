@@ -34,9 +34,11 @@ def notifyAdminsOfNewBooking(
             return
 
         try:
-            bot_token = st.secrets.get("telegram", {}).get("bot_token", BOT_TOKEN)
-            admin_chat_id = st.secrets.get("telegram", {}).get("admin_chat_id")
-        except:
+            telegram_secrets = st.secrets["telegram"]
+            bot_token = telegram_secrets["bot_token"]
+            admin_chat_id = str(telegram_secrets["admin_chat_id"])
+        except Exception as e:
+            logger.warning(f"Could not read telegram secrets: {e}")
             bot_token = BOT_TOKEN
             admin_chat_id = None
 
