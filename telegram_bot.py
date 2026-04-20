@@ -58,6 +58,7 @@ def get_pending_bookings():
             continue
         if end_ms >= now_ms:
             pending.append(r)
+    pending.sort(key=lambda r: float(r.get("start_unix_ms", 0)))
     return pending
 
 

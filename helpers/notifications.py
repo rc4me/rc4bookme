@@ -26,6 +26,11 @@ def notifyAdminsOfNewBooking(
     Fails silently - doesn't crash the booking if notification fails.
     """
     try:
+        # Skip notification if booking is in the past
+        if endTs <= datetime.now():
+            logger.info("Booking is in the past. Skipping notification.")
+            return
+
         try:
             bot_token = st.secrets.get("telegram", {}).get("bot_token", BOT_TOKEN)
             admin_chat_id = st.secrets.get("telegram", {}).get("admin_chat_id")
