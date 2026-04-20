@@ -137,6 +137,19 @@ def addBooking(
     ]
     sheet.append_row(row)
 
+    # Notify admins of new booking
+    from helpers import notifications
+    notifications.notifyAdminsOfNewBooking(
+        bookingName=bookingDescription,
+        startTs=startTs,
+        endTs=endTs,
+        studentName=name,
+        studentId=studentId,
+        teleHandle=teleHandle,
+        phoneNumber=phoneNumber,
+        bookingDescription=bookingDescription,
+    )
+
 
 def getPendingAndApprovedBookings() -> pd.DataFrame:
     refreshBookings()
