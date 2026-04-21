@@ -163,8 +163,15 @@ def poll_bot():
 
 if __name__ == "__main__":
     if SERVICE_ACCOUNT_INFO is None:
-        print("ERROR: Could not load service account from .streamlit/secrets.toml")
-        print("Make sure the file exists and has [serviceAccount] section.")
+        print("ERROR: Could not load service account.")
+        print("Set SERVICE_ACCOUNT_JSON env var or provide .streamlit/secrets.toml with [serviceAccount].")
         exit(1)
+    if not BOT_TOKEN:
+        print("ERROR: BOT_TOKEN not set.")
+        exit(1)
+    if not ADMIN_CHAT_IDS:
+        print("ERROR: ADMIN_CHAT_IDS not set.")
+        exit(1)
+    print(f"Starting bot with {len(ADMIN_CHAT_IDS)} admin(s): {ADMIN_CHAT_IDS}")
     poll_bot()
 
