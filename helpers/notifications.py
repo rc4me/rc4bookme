@@ -30,11 +30,12 @@ def notifyAdminsOfNewBooking(
         try:
             telegram_secrets = st.secrets["telegram"]
             bot_token = telegram_secrets["bot_token"]
-            admin_chat_id = str(telegram_secrets["admin_chat_id"])
+            raw_ids = str(telegram_secrets["admin_chat_id"])
+            admin_chat_ids = [id.strip() for id in raw_ids.split(",") if id.strip()]
         except Exception as e:
             logger.warning(f"Could not read telegram secrets: {e}")
             bot_token = BOT_TOKEN
-            admin_chat_id = None
+            admin_chat_ids = []
 
         if not bot_token:
             logger.warning("Telegram bot token not configured. Skipping notification.")
@@ -46,13 +47,14 @@ def notifyAdminsOfNewBooking(
             teleHandle, phoneNumber, bookingDescription
         )
 
-        # If admin_chat_id is set, send only to that person (testing mode)
-        if admin_chat_id:
-            try:
-                send_telegram_message_by_id(bot_token, admin_chat_id, message)
-                logger.info(f"Notification sent to admin chat ID: {admin_chat_id}")
-            except Exception as e:
-                logger.error(f"Failed to notify admin: {str(e)}")
+        # If admin_chat_ids is set, send to all of them
+        if admin_chat_ids:
+            for chat_id in admin_chat_ids:
+                try:
+                    send_telegram_message_by_id(bot_token, chat_id, message)
+                    logger.info(f"Notification sent to admin chat ID: {chat_id}")
+                except Exception as e:
+                    logger.error(f"Failed to notify admin {chat_id}: {str(e)}")
             return
 
         # Otherwise, send to all admins from Google Sheets
@@ -171,13 +173,14 @@ def notifyAdminAction(
         try:
             telegram_secrets = st.secrets["telegram"]
             bot_token = telegram_secrets["bot_token"]
-            admin_chat_id = str(telegram_secrets["admin_chat_id"])
+            raw_ids = str(telegram_secrets["admin_chat_id"])
+            admin_chat_ids = [id.strip() for id in raw_ids.split(",") if id.strip()]
         except Exception as e:
             logger.warning(f"Could not read telegram secrets: {e}")
             bot_token = BOT_TOKEN
-            admin_chat_id = None
+            admin_chat_ids = []
 
-        if not bot_token or not admin_chat_id:
+        if not bot_token or not admin_chat_ids:
             return
 
         action_emoji = {
@@ -206,8 +209,9 @@ def notifyAdminAction(
             f"<b>End:</b> {end_str}\n"
         )
 
-        send_telegram_message_by_id(bot_token, admin_chat_id, message)
-        logger.info(f"Admin action notification sent: {action}")
+        for chat_id in admin_chat_ids:
+            send_telegram_message_by_id(bot_token, chat_id, message)
+            logger.info(f"Admin action notification sent to {chat_id}: {action}")
 
     except Exception as e:
         logger.error(f"Error in notifyAdminAction: {str(e)}")
