@@ -23,12 +23,13 @@ try:
     import toml
     secrets = toml.load(".streamlit/secrets.toml")
     BOT_TOKEN = secrets["telegram"]["bot_token"]
-    ADMIN_CHAT_ID = str(secrets["telegram"]["admin_chat_id"])
+    raw_ids = str(secrets["telegram"]["admin_chat_id"])
+    ADMIN_CHAT_IDS = [id.strip() for id in raw_ids.split(",") if id.strip()]
     SERVICE_ACCOUNT_INFO = secrets["serviceAccount"]
 except Exception:
     # Fallback hardcoded values
     BOT_TOKEN = "8076498535:AAGo2kD-uxUn6n2_G0Y6MqbZeLra2DT_yfk"
-    ADMIN_CHAT_ID = "6549753967"
+    ADMIN_CHAT_IDS = ["6549753967"]
     SERVICE_ACCOUNT_INFO = None
 
 SCOPE = [
@@ -132,8 +133,8 @@ def poll_bot():
                 chat_id = str(msg.get("chat", {}).get("id", ""))
                 text = msg.get("text", "").strip()
 
-                # Only respond to authorized admin
-                if chat_id != ADMIN_CHAT_ID:
+                # Only respond to authorized admins
+                if chat_id not in ADMIN_CHAT_IDS:
                     send_message(chat_id, "⛔ You are not authorized to use this bot.")
                     continue
 
