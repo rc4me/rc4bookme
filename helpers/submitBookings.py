@@ -14,18 +14,32 @@ def getCalendarOptions() -> Dict:
     return options
 
 
+def describeUser(name: str, studentId: str) -> str:
+    # Legacy E1234567 IDs stay masked; newer NUS IDs are shown in full.
+    studentId = str(studentId)
+    isLegacyId = (
+        len(studentId) == 8
+        and studentId[0].lower() == "e"
+        and studentId[1:].isnumeric()
+    )
+    return f"{name} ({'E***' + studentId[4:] if isLegacyId else studentId})"
+
+
 @st.cache_data(ttl=timedelta(minutes=1), show_spinner=False)
 def getAllUsers() -> Dict[str, str]:
     df: pd.DataFrame = st.session_state["db"]["users"]
     usersDf = pd.DataFrame()
-    usersDf["description"] = df["name"] + " (E***" + df["student_id"].str[4:] + ")"
     usersDf["studentId"] = df["student_id"].copy()
+    usersDf["description"] = [
+        describeUser(name, studentId)
+        for name, studentId in zip(df["name"], df["student_id"])
+    ]
     usersDict = usersDf.set_index("description", drop=True)["studentId"].to_dict()
 
     userInfo = st.session_state["userInfo"]
     selfName = userInfo["name"]
     selfStudentId = userInfo["studentId"]
-    del usersDict[selfName + " (E***" + selfStudentId[4:] + ")"]
+    del usersDict[describeUser(selfName, selfStudentId)]
     return usersDict
 
 

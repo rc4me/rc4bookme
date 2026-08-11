@@ -4,13 +4,7 @@ import streamlit as st
 
 
 def isValidStudentId(studentId: str | None) -> bool:
-    if studentId is None or studentId == "":
-        return False
-    if studentId[0].lower() != "e":
-        return False
-    if len(studentId) != 8:
-        return False
-    if not studentId[1:].isnumeric():
+    if studentId is None or studentId.strip() == "":
         return False
     return True
 

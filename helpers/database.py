@@ -56,7 +56,7 @@ def getUserDetails(email: str) -> Dict[str, str]:
 
 def isAlreadyRegistered(studentId: str, teleHandle: str, phoneNumber: str) -> bool:
     refreshUsers()
-    studentId = studentId.upper()
+    studentId = studentId.strip()
     teleHandle = teleHandle.strip("@")
     phoneNumber = phoneNumber.replace(" ", "")
     isAlreadyRegistered = (
@@ -80,7 +80,7 @@ def registerStudent(
     row = [
         email,
         name.title(),
-        studentId.upper(),
+        studentId.strip(),
         teleHandle.strip("@"),
         phoneNumber.replace(" ", ""),
         roomNumber,

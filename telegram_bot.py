@@ -7,6 +7,7 @@ Run this script separately: python telegram_bot.py
 It polls for messages and responds to authorized users.
 """
 
+import os
 import requests
 import gspread
 import json
@@ -18,19 +19,42 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
 logger = logging.getLogger(__name__)
 
 # --- Configuration ---
-# Load from .streamlit/secrets.toml or set directly
-try:
-    import toml
-    secrets = toml.load(".streamlit/secrets.toml")
-    BOT_TOKEN = secrets["telegram"]["bot_token"]
-    raw_ids = str(secrets["telegram"]["admin_chat_id"])
-    ADMIN_CHAT_IDS = [id.strip() for id in raw_ids.split(",") if id.strip()]
-    SERVICE_ACCOUNT_INFO = secrets["serviceAccount"]
-except Exception:
-    # Fallback hardcoded values
-    BOT_TOKEN = "8076498535:AAGo2kD-uxUn6n2_G0Y6MqbZeLra2DT_yfk"
-    ADMIN_CHAT_IDS = ["6549753967"]
-    SERVICE_ACCOUNT_INFO = None
+# Priority: environment variables -> .streamlit/secrets.toml -> hardcoded fallback
+
+
+BOT_TOKEN = None
+ADMIN_CHAT_IDS = []
+SERVICE_ACCOUNT_INFO = None
+
+# 1. Try environment variables (used when deployed on Fly.io / Railway etc.)
+_env_token = os.environ.get("BOT_TOKEN")
+_env_admins = os.environ.get("ADMIN_CHAT_IDS")
+_env_sa = os.environ.get("SERVICE_ACCOUNT_JSON")
+
+if _env_token:
+    BOT_TOKEN = _env_token
+if _env_admins:
+    ADMIN_CHAT_IDS = [i.strip() for i in _env_admins.split(",") if i.strip()]
+if _env_sa:
+    try:
+        SERVICE_ACCOUNT_INFO = json.loads(_env_sa)
+    except Exception as e:
+        logger.error(f"Failed to parse SERVICE_ACCOUNT_JSON env var: {e}")
+
+# 2. Fall back to .streamlit/secrets.toml (used when running locally)
+if not BOT_TOKEN or not SERVICE_ACCOUNT_INFO:
+    try:
+        import toml
+        secrets = toml.load(".streamlit/secrets.toml")
+        if not BOT_TOKEN:
+            BOT_TOKEN = secrets["telegram"]["bot_token"]
+        if not ADMIN_CHAT_IDS:
+            raw_ids = str(secrets["telegram"]["admin_chat_id"])
+            ADMIN_CHAT_IDS = [i.strip() for i in raw_ids.split(",") if i.strip()]
+        if not SERVICE_ACCOUNT_INFO:
+            SERVICE_ACCOUNT_INFO = dict(secrets["serviceAccount"])
+    except Exception:
+        pass
 
 SCOPE = [
     "https://spreadsheets.google.com/feeds",

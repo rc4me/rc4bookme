@@ -33,7 +33,7 @@ if not st.session_state["isRegisteredUser"]:
     st.header("Hi, looks like it's your first time here!")
     st.subheader("Just key in a few details for us:")
     name = st.text_input("Full name (as in matriculation card)")
-    studentId = st.text_input("Student ID (eg. `E1234567`)")
+    studentId = st.text_input("Student ID")
     teleHandle = st.text_input("Telegram handle")
     phoneNumber = st.text_input("Contact number")
     roomNumber = st.selectbox(
